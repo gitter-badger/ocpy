@@ -1,0 +1,11 @@
+# Vim and MATLAB buffers
+*.swp
+*.swo
+*.m~
+
+# Data
+*.hdf5
+*.tiff
+
+# Compiled and Binary
+*.pyc
