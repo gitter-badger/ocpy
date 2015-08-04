@@ -6,7 +6,7 @@ DEFAULT_FORMAT =    'hdf5'
 DEFAULT_ZOOM   =    1
 CHUNK_DEPTH    =    16
 
-def get_data(token, 
+def get_data(token,
              x_lo, x_hi,
              y_lo, y_hi,
              z_lo, z_hi,
@@ -23,6 +23,10 @@ def get_data(token,
     Q_lo:   The lower bound of dimension 'Q'
     Q_hi:   The upper bound of dimension 'Q'
     """
+    
+    total_size = (x_hi - x_lo) * (y_hi - y_lo) * (z_hi - z_lo) * (14./(1000.*1000.*16.))
+    
+    print("Downloading approximately " + str(total_size) + " MB.")
 
     fmt = "hdf5" # Hard-coded for now to minimize server-load
 
