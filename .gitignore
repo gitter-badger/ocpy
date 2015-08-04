@@ -5,6 +5,7 @@
 
 # Data
 *.hdf5
+data/
 *.tiff
 
 # Compiled and Binary

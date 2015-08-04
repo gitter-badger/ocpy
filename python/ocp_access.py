@@ -4,7 +4,7 @@ import requests
 DEFAULT_SERVER =    'http://openconnecto.me'
 DEFAULT_FORMAT =    'hdf5'
 DEFAULT_ZOOM   =    1
-
+CHUNK_DEPTH    =    16
 
 def get_data(token, 
              x_lo, x_hi,
@@ -27,9 +27,9 @@ def get_data(token,
     # The array of local files that we create
     local_files = []
 
-    # OCP stores cubes of z-size = 16. To be efficient,
-    # we'll download in 16-z-slice units.
-    if z_hi - z_lo <= 16:
+    # OCP stores cubes of z-size = CHUNK_DEPTH. To be efficient,
+    # we'll download in CHUNK_DEPTH-z-slice units.
+    if z_hi - z_lo <= CHUNK_DEPTH:
         # We don't have to split, just download.
         local_files.append(
             _download_data(server, token, fmt, zoom,
@@ -38,12 +38,12 @@ def get_data(token,
                             z_lo, z_hi, location)
         )
     else:
-        # We need to split into 16-slice chunks.
+        # We need to split into CHUNK_DEPTH-slice chunks.
         z_last = z_lo
         while z_last < z_hi:
-            # Download from z_last to z_last + 16 OR
+            # Download from z_last to z_last + CHUNK_DEPTH OR
             # z_hi, whichever is smaller
-            if z_hi <= z_last + 16:
+            if z_hi <= z_last + CHUNK_DEPTH:
                 # Download from z_last to z_hi
                 local_files.append(
                     _download_data(server, token, fmt, zoom,
@@ -52,20 +52,22 @@ def get_data(token,
                             z_last, z_hi, location)
                 )
             else:
-                # Download from z_last to z_last + 16
+                # Download from z_last to z_last + CHUNK_DEPTH
                 local_files.append(
                     _download_data(server, token, fmt, zoom,
                             x_lo, x_hi,
                             y_lo, y_hi,
-                            z_last, z_last + 16, location)
+                            z_last, z_last + CHUNK_DEPTH, location)
                 )
 
-            z_last += 16
+            z_last += CHUNK_DEPTH + 1
 
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
 
     print [i for i in local_files]
+
+
 
 def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi, location):
     """
@@ -85,7 +87,7 @@ def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi,
     ]
 
     request_url = '/'.join(request_data)
-    file_name   = '-'.join(request_data[3:-1]) + "." + fmt
+    file_name   = location + "/" + '-'.join(request_data[3:-1]) + "." + fmt
 
     # Create a `requests` object.
     req = requests.get(request_url, stream=True)
