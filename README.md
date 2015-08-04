@@ -1,5 +1,5 @@
 # ocpAccess
-Scripts to get data from the OCP server
+Scripts to get data from the OCP server. Feel free to submit bug reports [here](https://github.com/openconnectome/ocpAccess/issues).
 
 
 # Python
