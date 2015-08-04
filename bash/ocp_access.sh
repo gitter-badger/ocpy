@@ -40,11 +40,12 @@ ocp_get_data () {
         shift
     done
 
-    @z_range = split(/,/, $z);
+    IFS=',' eval 'z_range=($z)'
 
-    if [ $z_range[1] -gt $z_range[0] + 16 ]; then
+    if [[ $z_range[1] -gt $(( $z_range[0] + 16 )) ]]; then
         # download in 16-slice iterations
+        echo "Chunking not yet supported."
     else
-        curl "${server}/${token}/${format}/${zoom}/${x}/${y}/${z}/" -o "${server}-${token}-${format}-${zoom}-${x}-${y}-${z}.hdf5"
+        curl -L "${server}/${token}/${format}/${zoom}/${x}/${y}/${z}/" -o "${token}-${format}-${zoom}-${x}-${y}-${z}.hdf5"
     fi
 }
