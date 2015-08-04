@@ -24,6 +24,8 @@ def get_data(token,
     Q_hi:   The upper bound of dimension 'Q'
     """
 
+    fmt = "hdf5" # Hard-coded for now to minimize server-load
+
     # The array of local files that we create
     local_files = []
 
@@ -64,9 +66,10 @@ def get_data(token,
 
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
+    # print([i for i in local_files])
 
-    print [i for i in local_files]
-
+    # Now let's re-combine these images into one large HDF5 file.
+    
 
 
 def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi, location):
@@ -74,7 +77,7 @@ def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi,
     Download the actual data from the server. Uses 1MB chunks when saving.
     Returns the filename stored locally. Specify a save-location target in get_data.
     """
-
+    print("Downloading " + str(z_lo) + "-" + str(z_hi))
     # Build a string that holds the full URL to request.
 
     request_data = [
