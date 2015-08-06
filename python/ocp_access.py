@@ -1,4 +1,6 @@
-import requests
+from __future__ import print_function
+import requests, h5py, os, numpy
+from PIL import Image
 
 
 DEFAULT_SERVER =    'http://openconnecto.me'
@@ -16,17 +18,39 @@ def get_data(token,
              location="./"):
     """
     Get data from the OCP server.
-    server: Internet-facing server
-    token:  Token to identify data to download
-    fmt:    The desired output format (see ocp_Convert repository to convert locally)
-    zoom:   Zoom level (starts at 0)
-    Q_lo:   The lower bound of dimension 'Q'
-    Q_hi:   The upper bound of dimension 'Q'
+    server:     Internet-facing server
+    token:      Token to identify data to download
+    fmt:        The desired output format (see ocp_Convert repository to convert locally)
+    zoom:       Zoom level (starts at 0)
+    Q_lo:       The lower bound of dimension 'Q'
+    Q_hi:       The upper bound of dimension 'Q'
+    location:   The on-disk location where we'll create /hdf5 and /tiff
     """
 
     total_size = (x_hi - x_lo) * (y_hi - y_lo) * (z_hi - z_lo) * (14./(1000.*1000.*16.))
 
-    print("Downloading approximately " + str(total_size) + " MB.")
+    print("Downloading approximately " + str(total_size) + " MB.\n")
+
+    # Figure out where we'll be saving files. If the directories don't
+    # exist, let's create them now.
+    location = location if location else os.getcwd()
+    try:
+        os.mkdir(location)
+    except Exception as e:
+        print("Directory /" + location + " already exists, not creating.")
+
+    os.chdir(location)
+
+    try:
+        os.mkdir('hdf5'); os.mkdir('tiff');
+    except Exception as e:
+        print("Data directories already exist, not creating /hdf5 or /tiff.")
+
+    confirm = raw_input("The data will be saved to /" + location + ".\n" +
+          "Continue? [yn] ")
+
+    if confirm is 'n':
+        return;
 
     fmt = "hdf5" # Hard-coded for now to minimize server-load
 
@@ -41,7 +65,7 @@ def get_data(token,
             _download_data(server, token, fmt, zoom,
                             x_lo, x_hi,
                             y_lo, y_hi,
-                            z_lo, z_hi, location)
+                            z_lo, z_hi, "hdf5")
         )
     else:
         # We need to split into CHUNK_DEPTH-slice chunks.
@@ -55,7 +79,7 @@ def get_data(token,
                     _download_data(server, token, fmt, zoom,
                             x_lo, x_hi,
                             y_lo, y_hi,
-                            z_last, z_hi, location)
+                            z_last, z_hi, "hdf5")
                 )
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
@@ -63,7 +87,7 @@ def get_data(token,
                     _download_data(server, token, fmt, zoom,
                             x_lo, x_hi,
                             y_lo, y_hi,
-                            z_last, z_last + CHUNK_DEPTH, location)
+                            z_last, z_last + CHUNK_DEPTH, "hdf5")
                 )
 
             z_last += CHUNK_DEPTH + 1
@@ -71,8 +95,38 @@ def get_data(token,
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
     # print([i for i in local_files])
+    convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, local_files)
 
-    # Now let's re-combine these images into one large HDF5 file.
+
+def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
+    # Because we downloaded these files in sequence by z-index
+    # (which is bad, it's better to mosaic the coords in x & y as well)
+    # we can simply 'slice' them into individual tiff files so they're 1
+    # unit 'thick' (like a virtual microtome.)
+    i = 1
+    print("Converting HDF5 files to single-layer TIFFs.")
+    for hdf_file in file_array:
+        print("Slicing " + hdf_file)
+        f = h5py.File(hdf_file, "r")
+        # OCP stores data inside the 'cutout' h5 dataset
+        data_layers = f.get('CUTOUT')
+        for layer in data_layers:
+            # Filename is formatted like the request URL but `/` is `-`
+            tiff_file = "-".join([
+                token, fmt, str(zoom),
+                str(x_lo) + "," + str(x_hi),
+                str(y_lo) + "," + str(y_hi),
+                str(i)
+            ]) + ".tiff"
+
+            im = Image.fromarray(layer)
+            im.save('tiff/' + tiff_file)
+            print(".", end="")
+            i += 1
+        print("\n")
+
+
+
 
 
 
@@ -87,7 +141,7 @@ def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi,
     request_data = [
         server, 'ocp', 'ca',        # Boilerplate server URL
         token, fmt, str(zoom),      # Set token, format, and zoom
-        str(x_lo) + "," + str(x_hi),# Z
+        str(x_lo) + "," + str(x_hi),# X
         str(y_lo) + "," + str(y_hi),# Y
         str(z_lo) + "," + str(z_hi),# Z
         ""                          # Trailing '/'
@@ -106,4 +160,3 @@ def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi,
                 f.flush()
 
     return file_name
-
