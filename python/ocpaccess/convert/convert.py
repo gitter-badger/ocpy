@@ -43,7 +43,7 @@ def _guess_format_from_extension(ext):
 
     Returns:
         String. The format (without leading period),
-                or False if none was found.
+                or False if none was found or couldn't be guessed
     """
     ext = ext.strip('.')
 
@@ -52,7 +52,17 @@ def _guess_format_from_extension(ext):
     # - If it appears once, we can simply return that format.
     # - If it appears more than once, we can't guess (it's ambiguous,
     #   e.g .m = RAMON or MATLAB)
-    
+
+    formats = []
+    for fmt in FILE_FORMATS:
+        if ext in FILE_FORMATS[fmt]:
+            formats.append(fmt)
+
+    if formats == [] or len(formats) > 1:
+        return False
+
+    return formats[0]
+
 
 
 
