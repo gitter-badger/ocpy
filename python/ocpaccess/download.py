@@ -2,7 +2,7 @@ from __future__ import print_function
 import requests, h5py, os, numpy
 from PIL import Image
 
-import ocpconvert.tiff
+import convert.tiff
 
 
 DEFAULT_SERVER =    'http://openconnecto.me'
