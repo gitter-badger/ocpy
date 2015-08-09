@@ -2,6 +2,8 @@ from __future__ import print_function
 import requests, h5py, os, numpy
 from PIL import Image
 
+import ocpconvert
+
 
 DEFAULT_SERVER =    'http://openconnecto.me'
 DEFAULT_FORMAT =    'hdf5'
@@ -119,8 +121,7 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
                 str(i)
             ]) + ".tiff"
 
-            im = Image.fromarray(layer)
-            im.save('tiff/' + tiff_file)
+            ocpconvert.tiff.export_tiff(tiff_file, layer)
             print(".", end="")
             i += 1
         print("\n")

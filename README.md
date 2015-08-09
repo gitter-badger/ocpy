@@ -7,6 +7,11 @@ These scripts are written to work with 2.7 and (ideally, but untestedly) Python 
 
 In order to set up the python environment, you'll need to download a few libraries. You can use `pip` for this, and run `pip install -r requirements` from inside the `/python` directory, or you can manually install each of the libraries listed in the `requirements` file.
 
+You'll also need the [ocpconvert](https://github.com/openconnectome/ocpConvert) Python package, which handles conversion of OCP datatypes.
+
+## Python: Setup
+The python package `ocpaccess` must be in the same directory as the `ocpconvert` package mentioned above. Any python script in that directory will have access to both packages.
+
 ## Python: Usage
 The python script `ocp_access.py` contains a function called `get_data`. This is usable from your code: Simply copy this file into your project directory and add `import ocp_access` to the list of python imports.
 
