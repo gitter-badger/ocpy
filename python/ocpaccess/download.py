@@ -2,7 +2,7 @@ from __future__ import print_function
 import requests, h5py, os, numpy
 from PIL import Image
 
-import ocpconvert
+import ocpconvert.tiff
 
 
 DEFAULT_SERVER =    'http://openconnecto.me'
@@ -121,7 +121,7 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
                 str(i)
             ]) + ".tiff"
 
-            ocpconvert.tiff.export_tiff(tiff_file, layer)
+            ocpconvert.tiff.export_tiff("tiff/" + tiff_file, layer)
             print(".", end="")
             i += 1
         print("\n")
