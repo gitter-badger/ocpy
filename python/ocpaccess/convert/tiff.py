@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy
 import os
+import glob
 
 def import_tiff(tiff_filename):
     """
@@ -88,6 +89,7 @@ def export_tiff_collection(tiff_filename_base, numpy_data, start_layers_at=1):
     # The array of filenames to return
     output_files = []
 
+    # Filename 0-padding
     i = start_layers_at
     for layer in numpy_data:
         layer_filename = str(i).join(file_base_array) + file_extension
@@ -108,9 +110,16 @@ def import_tiff_collection(tiff_filename_base):
         tiff_filename_base:     An asterisk-wildcard string that should refer
                                 to all TIFFs in the stack. All * are replaced
                                 according to command-line expansion rules.
-
     Returns:
         A numpy array holding a 3D dataset
     """
-    # TODO: This is not even done at all
-    pass
+
+    # We expect images to be indexed by their alphabetical order.
+    files = glob.glob(tiff_filename_base)
+    files.sort()
+
+    numpy_data = []
+    for f in files:
+        numpy_data.append(import_tiff(f))
+
+    return numpy_data

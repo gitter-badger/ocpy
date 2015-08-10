@@ -155,9 +155,6 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
 
 
 
-
-
-
 def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi, location):
     """
     Download the actual data from the server. Uses 1MB chunks when saving.
