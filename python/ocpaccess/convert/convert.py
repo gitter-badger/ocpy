@@ -1,4 +1,4 @@
-import os
+import os, shutil
 
 FILE_FORMATS = {
     # Format.lower()    # File extension. By convention, use the first by default
@@ -12,6 +12,14 @@ FILE_FORMATS = {
 # This is not simply FILE_FORMATS in 'reverse', because while we may be able
 # to get the file extension for a RAMON object (.m) we can't guess a datatype
 # from the ambiguous extension ".m".
+
+
+def _fail_pair_conversion(i, o):
+    """
+    Helper-function to print failure and pass back False.
+    """
+    print("Conversion from {0} to {1} is not currently supported.".format(i, o))
+    return False
 
 
 def _get_extension_for_format(fmt):
@@ -65,7 +73,6 @@ def _guess_format_from_extension(ext):
 
 
 
-
 def convert(in_file, out_file, in_fmt="", out_fmt=""):
     """
     Converts in_file to out_file, guessing datatype in the absence of
@@ -81,6 +88,63 @@ def convert(in_file, out_file, in_fmt="", out_fmt=""):
         String. Output filename
     """
 
-    if in_fmt == "":
-        # Guess in_fmt from in_file
-        in_fmt = in_file.slice('.')[-1]
+    # First verify that in_file exists and out_file doesn't.
+    in_file = os.path.expanduser(in_file)
+    out_file = os.path.expanduser(out_file)
+
+    if os.path.exists(out_file):
+        print("Output file {0} already exists, stopping...".format(out_file))
+        return False
+    if not os.path.exists(in_file):
+        print("Input file {0} does not exist, stopping...".format(in_file))
+        return False
+
+    # Get formats, either by explicitly naming them or by guessing.
+    # TODO: It'd be neat to check here if an explicit fmt matches the guess.
+    in_fmt = in_fmt.lower() or _guess_format_from_extension(
+             in_file.slice('.')[-1].lower())
+    out_fmt = out_fmt.lower() or _guess_format_from_extension(
+              out_file.slice('.')[-1].lower())
+
+    if not in_fmt or not out_fmt:
+        print("Cannot determine conversion formats.")
+        return False
+
+    if in_fmt is out_fmt:
+        # This is the case when this module (intended for LONI) is used
+        # indescriminately to 'funnel' data into one format.
+        shutil.copyfileobj(in_file, out_file)
+        return out_file
+
+    if in_fmt is 'hdf5':
+        if out_fmt is 'tiff':
+            return hdf5_to_tiff(in_file, out_file)
+        else:
+            return _fail_pair_conversion(in_fmt, out_fmt)
+    elif in_fmt is 'tiff':
+        if out_fmt is 'hdf5':
+            return tiff_to_hdf5(in_file, out_file)
+        else:
+            return _fail_pair_conversion(in_fmt, out_fmt)
+    else:
+        return _fail_pair_conversion(in_fmt, out_fmt)
+
+
+"""
+All converters below this line work in approximately the same way:
+    - Import from in_file to numpy array
+    - Export to out_file format
+This makes the (debatable) assumption that there is no faster method
+to convert between the two. Future releases will include better handling
+of these cases.
+"""
+
+def hdf5_to_tiff(in_file, out_file):
+    import tiff, hdf5
+    data = hdf5.import_hdf5(in_file)
+    return tiff.export_tiff(out_file, data)
+
+def tiff_to_hdf5(in_file, out_file):
+    import tiff, hdf5
+    data = tiff.import_tiff(in_file)
+    return hdf5.export_hdf5(out_file, data)

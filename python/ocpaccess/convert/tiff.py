@@ -19,7 +19,7 @@ def import_tiff(tiff_filename):
     try:
         img = Image.open(tiff_filename)
     except Exception as e:
-        print("Could not load file {1} for conversion.".format(tiff_filename))
+        print("Could not load file {0} for conversion.".format(tiff_filename))
         raise
 
     return numpy.array(img)
@@ -45,14 +45,14 @@ def export_tiff(tiff_filename, numpy_data):
         print("Datatype is not uint8, you may experience a known PIL bug. Continuing...")
 
     if os.path.exists(tiff_filename):
-        print("File {1} already exists, stopping...".format(tiff_filename))
+        print("File {0} already exists, stopping...".format(tiff_filename))
         return False
 
     try:
         img = Image.fromarray(numpy_data)
         img.save(tiff_filename)
     except Exception as e:
-        print("Could not save TIFF file {1}.".format(tiff_filename))
+        print("Could not save TIFF file {0}.".format(tiff_filename))
 
     return tiff_filename
 
