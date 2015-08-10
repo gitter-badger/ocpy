@@ -1,5 +1,8 @@
 from __future__ import print_function
-import requests, h5py, os, numpy
+import requests
+import h5py
+import os
+import numpy
 from PIL import Image
 
 import convert.tiff
@@ -10,6 +13,22 @@ DEFAULT_FORMAT =    'hdf5'
 DEFAULT_ZOOM   =    1
 CHUNK_DEPTH    =    16
 
+
+def get_info(token, server=DEFAULT_SERVER):
+    """
+    Get information about a dataset from its token, using the /info endpoint.
+
+    Arguments:
+        token:      The token identifying the dataset to investigate
+
+    Returns:
+        JSON object containing the content of the /info page.
+    """
+    url = '/'.join([server, 'ocp', 'ca', token, 'info', ''])
+    req = requests.get(url)
+    return req.json()
+
+
 def get_data(token,
              x_lo, x_hi,
              y_lo, y_hi,
@@ -17,16 +36,23 @@ def get_data(token,
              fmt=DEFAULT_FORMAT,
              zoom=DEFAULT_ZOOM,
              server=DEFAULT_SERVER,
-             location="./"):
+             location="./",
+             ask_before_writing=False):
     """
     Get data from the OCP server.
-    server:     Internet-facing server
-    token:      Token to identify data to download
-    fmt:        The desired output format (see ocp_Convert repository to convert locally)
-    zoom:       Zoom level (starts at 0)
-    Q_lo:       The lower bound of dimension 'Q'
-    Q_hi:       The upper bound of dimension 'Q'
-    location:   The on-disk location where we'll create /hdf5 and /tiff
+
+    Arguments:
+        server:                 Internet-facing server
+        token:                  Token to identify data to download
+        fmt:                    The desired output format (see ocp_Convert repository to convert locally)
+        zoom:                   Zoom level (starts at 0)
+        Q_lo:                   The lower bound of dimension 'Q'
+        Q_hi:                   The upper bound of dimension 'Q'
+        location:               The on-disk location where we'll create /hdf5 and /tiff
+        ask_before_writing:     Ask (y/n) before creating directories.
+
+    Returns:
+        None
     """
 
     total_size = (x_hi - x_lo) * (y_hi - y_lo) * (z_hi - z_lo) * (14./(1000.*1000.*16.))
@@ -48,11 +74,12 @@ def get_data(token,
     except Exception as e:
         print("Data directories already exist, not creating /hdf5 or /tiff.")
 
-    confirm = raw_input("The data will be saved to /" + location + ".\n" +
-          "Continue? [yn] ")
+    if ask_before_writing:
+        confirm = raw_input("The data will be saved to /" + location + ".\n" +
+              "Continue? [yn] ")
 
-    if confirm is 'n':
-        return;
+        if confirm is 'n':
+            return;
 
     fmt = "hdf5" # Hard-coded for now to minimize server-load
 
@@ -121,7 +148,7 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
                 str(i)
             ]) + ".tiff"
 
-            ocpconvert.tiff.export_tiff("tiff/" + tiff_file, layer)
+            convert.tiff.export_tiff("tiff/" + tiff_file, layer)
             print(".", end="")
             i += 1
         print("\n")

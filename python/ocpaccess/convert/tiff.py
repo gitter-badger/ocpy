@@ -95,3 +95,22 @@ def export_tiff_collection(tiff_filename_base, numpy_data, start_layers_at=1):
         i += 1
 
     return output_files
+
+def import_tiff_collection(tiff_filename_base):
+    """
+    Import all files matching the filename base given via `tiff_filename_base`.
+    Images are ordered by alphabetical order, which means that you *MUST* 0-pad
+    your numbers if they span a power of ten (e.g. 0999-1000 or 09-10). This is
+    handled automatically by the complement function, `export_tiff_collection`.
+    Also, look at how nicely these documentation lines are all the same length!
+
+    Arguments:
+        tiff_filename_base:     An asterisk-wildcard string that should refer
+                                to all TIFFs in the stack. All * are replaced
+                                according to command-line expansion rules.
+
+    Returns:
+        A numpy array holding a 3D dataset
+    """
+    # TODO: This is not even done at all
+    pass
