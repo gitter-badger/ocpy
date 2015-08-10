@@ -92,7 +92,7 @@ def export_tiff_collection(tiff_filename_base, numpy_data, start_layers_at=1):
     # Filename 0-padding
     i = start_layers_at
     for layer in numpy_data:
-        layer_filename = str(i).join(file_base_array) + file_extension
+        layer_filename = (str(i).zfill(6)).join(file_base_array) + file_extension
         output_files.append(export_tiff(layer_filename, layer))
         i += 1
 
