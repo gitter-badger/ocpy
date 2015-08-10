@@ -20,7 +20,6 @@ def get_info(token, server=DEFAULT_SERVER):
 
     Arguments:
         token:      The token identifying the dataset to investigate
-
     Returns:
         JSON object containing the content of the /info page.
     """
@@ -30,9 +29,9 @@ def get_info(token, server=DEFAULT_SERVER):
 
 
 def get_data(token,
-             x_lo, x_hi,
-             y_lo, y_hi,
-             z_lo, z_hi,
+             x_start, x_stop,
+             y_start, y_stop,
+             z_start, z_stop,
              fmt=DEFAULT_FORMAT,
              zoom=DEFAULT_ZOOM,
              server=DEFAULT_SERVER,
@@ -46,8 +45,8 @@ def get_data(token,
         token:                  Token to identify data to download
         fmt:                    The desired output format (see ocp_Convert repository to convert locally)
         zoom:                   Zoom level (starts at 0)
-        Q_lo:                   The lower bound of dimension 'Q'
-        Q_hi:                   The upper bound of dimension 'Q'
+        Q_start:                   The lower bound of dimension 'Q'
+        Q_stop:                   The upper bound of dimension 'Q'
         location:               The on-disk location where we'll create /hdf5 and /tiff
         ask_before_writing:     Ask (y/n) before creating directories.
 
@@ -55,7 +54,7 @@ def get_data(token,
         None
     """
 
-    total_size = (x_hi - x_lo) * (y_hi - y_lo) * (z_hi - z_lo) * (14./(1000.*1000.*16.))
+    total_size = (x_stop - x_start) * (y_stop - y_start) * (z_stop - z_start) * (14./(1000.*1000.*16.))
 
     print("Downloading approximately " + str(total_size) + " MB.\n")
 
@@ -88,34 +87,34 @@ def get_data(token,
 
     # OCP stores cubes of z-size = CHUNK_DEPTH. To be efficient,
     # we'll download in CHUNK_DEPTH-z-slice units.
-    if z_hi - z_lo <= CHUNK_DEPTH:
+    if z_stop - z_start <= CHUNK_DEPTH:
         # We don't have to split, just download.
         local_files.append(
             _download_data(server, token, fmt, zoom,
-                            x_lo, x_hi,
-                            y_lo, y_hi,
-                            z_lo, z_hi, "hdf5")
+                            x_start, x_stop,
+                            y_start, y_stop,
+                            z_start, z_stop, "hdf5")
         )
     else:
         # We need to split into CHUNK_DEPTH-slice chunks.
-        z_last = z_lo
-        while z_last < z_hi:
+        z_last = z_start
+        while z_last < z_stop:
             # Download from z_last to z_last + CHUNK_DEPTH OR
-            # z_hi, whichever is smaller
-            if z_hi <= z_last + CHUNK_DEPTH:
-                # Download from z_last to z_hi
+            # z_stop, whichever is smaller
+            if z_stop <= z_last + CHUNK_DEPTH:
+                # Download from z_last to z_stop
                 local_files.append(
                     _download_data(server, token, fmt, zoom,
-                            x_lo, x_hi,
-                            y_lo, y_hi,
-                            z_last, z_hi, "hdf5")
+                            x_start, x_stop,
+                            y_start, y_stop,
+                            z_last, z_stop, "hdf5")
                 )
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
                 local_files.append(
                     _download_data(server, token, fmt, zoom,
-                            x_lo, x_hi,
-                            y_lo, y_hi,
+                            x_start, x_stop,
+                            y_start, y_stop,
                             z_last, z_last + CHUNK_DEPTH, "hdf5")
                 )
 
@@ -124,10 +123,10 @@ def get_data(token,
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
     # print([i for i in local_files])
-    convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, local_files)
+    convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, local_files)
 
 
-def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
+def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, file_array):
     # Because we downloaded these files in sequence by z-index
     # (which is bad, it's better to mosaic the coords in x & y as well)
     # we can simply 'slice' them into individual tiff files so they're 1
@@ -143,8 +142,8 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
             # Filename is formatted like the request URL but `/` is `-`
             tiff_file = "-".join([
                 token, fmt, str(zoom),
-                str(x_lo) + "," + str(x_hi),
-                str(y_lo) + "," + str(y_hi),
+                str(x_start) + "," + str(x_stop),
+                str(y_start) + "," + str(y_stop),
                 str(i)
             ]) + ".tiff"
 
@@ -155,20 +154,20 @@ def convert_files_to_tiff(token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, file_array):
 
 
 
-def _download_data(server, token, fmt, zoom, x_lo, x_hi, y_lo, y_hi, z_lo, z_hi, location):
+def _download_data(server, token, fmt, zoom, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
     """
     Download the actual data from the server. Uses 1MB chunks when saving.
     Returns the filename stored locally. Specify a save-location target in get_data.
     """
-    print("Downloading " + str(z_lo) + "-" + str(z_hi))
+    print("Downloading " + str(z_start) + "-" + str(z_stop))
     # Build a string that holds the full URL to request.
 
     request_data = [
         server, 'ocp', 'ca',        # Boilerplate server URL
         token, fmt, str(zoom),      # Set token, format, and zoom
-        str(x_lo) + "," + str(x_hi),# X
-        str(y_lo) + "," + str(y_hi),# Y
-        str(z_lo) + "," + str(z_hi),# Z
+        str(x_start) + "," + str(x_stop),# X
+        str(y_start) + "," + str(y_stop),# Y
+        str(z_start) + "," + str(z_stop),# Z
         ""                          # Trailing '/'
     ]
 

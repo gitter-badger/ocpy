@@ -19,12 +19,12 @@ You can now use the function `ocp_access.get_data()` to retrieve data from the O
 | Argument | Required | Description |
 |----------|----------|-------------|
 | `token` | Yes | The project token to download. |
-| `x_lo` | Yes | The low bound in dimension X |
-| `x_hi` | Yes | The high bound in dimension X |
-| `y_lo` | Yes | The low bound in dimension Y |
-| `y_hi` | Yes | The high bound in dimension Y |
-| `z_lo` | Yes | The low bound in dimension Z |
-| `z_hi` | Yes | The high bound in dimension Z |
+| `x_start` | Yes | The low bound in dimension X |
+| `x_stop` | Yes | The high bound in dimension X |
+| `y_start` | Yes | The low bound in dimension Y |
+| `y_stop` | Yes | The high bound in dimension Y |
+| `z_start` | Yes | The low bound in dimension Z |
+| `z_stop` | Yes | The high bound in dimension Z |
 | `fmt` | No (`hdf5`) | The format in which to download code. (Currently only `hdf5` is legal.) |
 | `zoom` | No (`1`) | The zoom level at which to download data |
 | `server` | No (`http://openconnecto.me`) | The server at which to request data |
@@ -37,9 +37,9 @@ import ocp_access
 
 ocp_access.get_data(
         token =     "kasthuri11",
-        x_lo =      5000,              x_hi =      5500,
-        y_lo =      5000,              y_hi =      5500,
-        z_lo =      1,                 z_hi =      3,
+        x_start =      5000,              x_stop =      5500,
+        y_start =      5000,              y_stop =      5500,
+        z_start =      1,                 z_stop =      3,
         location =  "data"
 )
 ```
