@@ -32,7 +32,7 @@ def get_data(token,
              x_start, x_stop,
              y_start, y_stop,
              z_start, z_stop,
-             zoom,
+             resolution,
              fmt=DEFAULT_FORMAT,
              server=DEFAULT_SERVER,
              location="./",
@@ -45,7 +45,7 @@ def get_data(token,
                                 Internet-facing server. Must include protocol (e.g. ``https``).
         :token:                 ``string`` Token to identify data to download
         :fmt:                   ``string : 'hdf5'`` The desired output format
-        :zoom:                  ``int`` Zoom level
+        :resolution:            ``int`` Resolution level
         :Q_start:               ``int`` The lower bound of dimension 'Q'
         :Q_stop:                ``int`` The upper bound of dimension 'Q'
         :location:              ``string : './'`` The on-disk location where we'll create /hdf5 and /png
@@ -91,7 +91,7 @@ def get_data(token,
     if z_stop - z_start <= CHUNK_DEPTH:
         # We don't have to split, just download.
         local_files.append(
-            _download_data(server, token, fmt, zoom,
+            _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_start, z_stop, "hdf5")
@@ -105,7 +105,7 @@ def get_data(token,
             if z_stop <= z_last + CHUNK_DEPTH:
                 # Download from z_last to z_stop
                 local_files.append(
-                    _download_data(server, token, fmt, zoom,
+                    _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_stop, "hdf5")
@@ -113,7 +113,7 @@ def get_data(token,
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
                 local_files.append(
-                    _download_data(server, token, fmt, zoom,
+                    _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_last + CHUNK_DEPTH, "hdf5")
@@ -124,7 +124,7 @@ def get_data(token,
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
     # print([i for i in local_files])
-    files = convert_files_to_png(token, fmt, zoom,
+    files = convert_files_to_png(token, fmt, resolution,
                                   x_start, x_stop,
                                   y_start, y_stop,
                                   local_files)
@@ -147,7 +147,7 @@ def get_data(token,
         for layer in data_layers:
             # Filename is formatted like the request URL but `/` is `-`
             png_file = "-".join([
-                token, fmt, str(zoom),
+                token, fmt, str(resolution),
                 str(x_start) + "," + str(x_stop),
                 str(y_start) + "," + str(y_stop),
                 str(i)
@@ -162,7 +162,7 @@ def get_data(token,
 
 
 
-def _download_data(server, token, fmt, zoom, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
+def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
     """
     Download the actual data from the server. Uses 1MB chunks when saving.
     Returns the filename stored locally. Specify a save-location target in get_data.
@@ -172,7 +172,7 @@ def _download_data(server, token, fmt, zoom, x_start, x_stop, y_start, y_stop, z
 
     request_data = [
         server, 'ocp', 'ca',                # Boilerplate server URL
-        token, fmt, str(zoom),              # Set token, format, and zoom
+        token, fmt, str(resolution),        # Set token, format, and resolution
         str(x_start) + "," + str(x_stop),   # X
         str(y_start) + "," + str(y_stop),   # Y
         str(z_start) + "," + str(z_stop),   # Z

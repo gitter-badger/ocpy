@@ -116,7 +116,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-<span class="kn">import</span> <span class="nn">convert.tiff</span>
+<span class="kn">import</span> <span class="nn">convert.png</span>
 
 
 <span class="n">DEFAULT_SERVER</span> <span class="o">=</span>    <span class="s">&#39;http://openconnecto.me&#39;</span>
@@ -143,7 +143,7 @@
              <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
              <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
              <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span>
-             <span class="n">zoom</span><span class="p">,</span>
+             <span class="n">resolution</span><span class="p">,</span>
              <span class="n">fmt</span><span class="o">=</span><span class="n">DEFAULT_FORMAT</span><span class="p">,</span>
              <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">,</span>
              <span class="n">location</span><span class="o">=</span><span class="s">&quot;./&quot;</span><span class="p">,</span>
@@ -156,10 +156,10 @@
 <span class="sd">                                Internet-facing server. Must include protocol (e.g. ``https``).</span>
 <span class="sd">        :token:                 ``string`` Token to identify data to download</span>
 <span class="sd">        :fmt:                   ``string : &#39;hdf5&#39;`` The desired output format</span>
-<span class="sd">        :zoom:                  ``int`` Zoom level</span>
+<span class="sd">        :resolution:            ``int`` Resolution level</span>
 <span class="sd">        :Q_start:               ``int`` The lower bound of dimension &#39;Q&#39;</span>
 <span class="sd">        :Q_stop:                ``int`` The upper bound of dimension &#39;Q&#39;</span>
-<span class="sd">        :location:              ``string : &#39;./&#39;`` The on-disk location where we&#39;ll create /hdf5 and /tiff</span>
+<span class="sd">        :location:              ``string : &#39;./&#39;`` The on-disk location where we&#39;ll create /hdf5 and /png</span>
 <span class="sd">        :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.</span>
 
 <span class="sd">    Returns:</span>
@@ -181,9 +181,9 @@
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;hdf5&#39;</span><span class="p">);</span> <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;tiff&#39;</span><span class="p">);</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;hdf5&#39;</span><span class="p">);</span> <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;png&#39;</span><span class="p">);</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Data directories already exist, not creating /hdf5 or /tiff.&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Data directories already exist, not creating /hdf5 or /png.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ask_before_writing</span><span class="p">:</span>
         <span class="n">confirm</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;The data will be saved to /&quot;</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s">&quot;.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span>
@@ -202,7 +202,7 @@
     <span class="k">if</span> <span class="n">z_stop</span> <span class="o">-</span> <span class="n">z_start</span> <span class="o">&lt;=</span> <span class="n">CHUNK_DEPTH</span><span class="p">:</span>
         <span class="c"># We don&#39;t have to split, just download.</span>
         <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span>
+            <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
                             <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
                             <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
                             <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -216,7 +216,7 @@
             <span class="k">if</span> <span class="n">z_stop</span> <span class="o">&lt;=</span> <span class="n">z_last</span> <span class="o">+</span> <span class="n">CHUNK_DEPTH</span><span class="p">:</span>
                 <span class="c"># Download from z_last to z_stop</span>
                 <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span>
+                    <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
                             <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
                             <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
                             <span class="n">z_last</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -224,7 +224,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c"># Download from z_last to z_last + CHUNK_DEPTH</span>
                 <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span>
+                    <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
                             <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
                             <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
                             <span class="n">z_last</span><span class="p">,</span> <span class="n">z_last</span> <span class="o">+</span> <span class="n">CHUNK_DEPTH</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -235,18 +235,16 @@
     <span class="c"># We now have an array, `local_files`, holding all of the</span>
     <span class="c"># files that we downloaded.</span>
     <span class="c"># print([i for i in local_files])</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">convert_files_to_png</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
                                   <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
                                   <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
                                   <span class="n">local_files</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">files</span>
 
 
-</div>
-<div class="viewcode-block" id="convert_files_to_tiff"><a class="viewcode-back" href="../../apidoc/ocpaccess.html#ocpaccess.download.convert_files_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">file_array</span><span class="p">):</span>
     <span class="c"># Because we downloaded these files in sequence by z-index</span>
     <span class="c"># (which is bad, it&#39;s better to mosaic the coords in x &amp; y as well)</span>
-    <span class="c"># we can simply &#39;slice&#39; them into individual tiff files so they&#39;re 1</span>
+    <span class="c"># we can simply &#39;slice&#39; them into individual png files so they&#39;re 1</span>
     <span class="c"># unit &#39;thick&#39; (like a virtual microtome.)</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Converting HDF5 files to single-layer TIFFs.&quot;</span><span class="p">)</span>
@@ -259,15 +257,15 @@
         <span class="n">out_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">data_layers</span><span class="p">:</span>
             <span class="c"># Filename is formatted like the request URL but `/` is `-`</span>
-            <span class="n">tiff_file</span> <span class="o">=</span> <span class="s">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">zoom</span><span class="p">),</span>
+            <span class="n">png_file</span> <span class="o">=</span> <span class="s">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">x_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_stop</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">y_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_stop</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="p">])</span> <span class="o">+</span> <span class="s">&quot;.tiff&quot;</span>
+            <span class="p">])</span> <span class="o">+</span> <span class="s">&quot;.png&quot;</span>
 
             <span class="n">out_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">convert</span><span class="o">.</span><span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="s">&quot;tiff/&quot;</span> <span class="o">+</span> <span class="n">tiff_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">))</span>
+                <span class="n">convert</span><span class="o">.</span><span class="n">png</span><span class="o">.</span><span class="n">export_png</span><span class="p">(</span><span class="s">&quot;png/&quot;</span> <span class="o">+</span> <span class="n">png_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">))</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -275,7 +273,7 @@
 
 
 </div>
-<span class="k">def</span> <span class="nf">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download the actual data from the server. Uses 1MB chunks when saving.</span>
 <span class="sd">    Returns the filename stored locally. Specify a save-location target in get_data.</span>
@@ -285,7 +283,7 @@
 
     <span class="n">request_data</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">server</span><span class="p">,</span> <span class="s">&#39;ocp&#39;</span><span class="p">,</span> <span class="s">&#39;ca&#39;</span><span class="p">,</span>                <span class="c"># Boilerplate server URL</span>
-        <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">zoom</span><span class="p">),</span>              <span class="c"># Set token, format, and zoom</span>
+        <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">),</span>        <span class="c"># Set token, format, and resolution</span>
         <span class="nb">str</span><span class="p">(</span><span class="n">x_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_stop</span><span class="p">),</span>   <span class="c"># X</span>
         <span class="nb">str</span><span class="p">(</span><span class="n">y_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_stop</span><span class="p">),</span>   <span class="c"># Y</span>
         <span class="nb">str</span><span class="p">(</span><span class="n">z_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_stop</span><span class="p">),</span>   <span class="c"># Z</span>

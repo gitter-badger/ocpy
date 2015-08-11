@@ -26,7 +26,7 @@ You can now use the function `ocp_access.get_data()` to retrieve data from the O
 | `z_start` | Yes | The low bound in dimension Z |
 | `z_stop` | Yes | The high bound in dimension Z |
 | `fmt` | No (`hdf5`) | The format in which to download code. (Currently only `hdf5` is legal.) |
-| `zoom` | No (`1`) | The zoom level at which to download data |
+| `resolution` | Yes | The resolution level at which to download data |
 | `server` | No (`http://openconnecto.me`) | The server at which to request data |
 | `location` | No (`./`) | The location on-disk (locally) where you'd like to save the data. Two subdirectories will be created: `/hdf5` and `/tiff`. |
 

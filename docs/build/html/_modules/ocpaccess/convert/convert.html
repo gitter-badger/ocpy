@@ -115,6 +115,7 @@
     <span class="c"># Format.lower()    # File extension. By convention, use the first by default</span>
     <span class="s">&#39;hdf5&#39;</span><span class="p">:</span>             <span class="p">[</span><span class="s">&#39;hdf5&#39;</span><span class="p">,</span> <span class="s">&#39;h5&#39;</span><span class="p">,</span> <span class="s">&#39;hdf&#39;</span><span class="p">],</span>
     <span class="s">&#39;tiff&#39;</span><span class="p">:</span>             <span class="p">[</span><span class="s">&#39;tiff&#39;</span><span class="p">,</span> <span class="s">&#39;tif&#39;</span><span class="p">],</span>
+    <span class="s">&#39;png&#39;</span><span class="p">:</span>              <span class="p">[</span><span class="s">&#39;png&#39;</span><span class="p">],</span>
     <span class="s">&#39;ramon&#39;</span><span class="p">:</span>            <span class="p">[</span><span class="s">&#39;m&#39;</span><span class="p">],</span>
     <span class="s">&#39;matlab&#39;</span><span class="p">:</span>           <span class="p">[</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;mat&#39;</span><span class="p">],</span>
 <span class="p">}</span>
@@ -213,9 +214,9 @@
     <span class="c"># Get formats, either by explicitly naming them or by guessing.</span>
     <span class="c"># TODO: It&#39;d be neat to check here if an explicit fmt matches the guess.</span>
     <span class="n">in_fmt</span> <span class="o">=</span> <span class="n">in_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="n">_guess_format_from_extension</span><span class="p">(</span>
-             <span class="n">in_file</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+             <span class="n">in_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="n">out_fmt</span> <span class="o">=</span> <span class="n">out_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="n">_guess_format_from_extension</span><span class="p">(</span>
-              <span class="n">out_file</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+              <span class="n">out_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">in_fmt</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">out_fmt</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;Cannot determine conversion formats.&quot;</span><span class="p">)</span>
@@ -227,38 +228,35 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out_file</span>
 
-    <span class="k">if</span> <span class="n">in_fmt</span> <span class="ow">is</span> <span class="s">&#39;hdf5&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">out_fmt</span> <span class="ow">is</span> <span class="s">&#39;tiff&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">hdf5_to_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_fail_pair_conversion</span><span class="p">(</span><span class="n">in_fmt</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">in_fmt</span> <span class="ow">is</span> <span class="s">&#39;tiff&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">out_fmt</span> <span class="ow">is</span> <span class="s">&#39;hdf5&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">tiff_to_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_fail_pair_conversion</span><span class="p">(</span><span class="n">in_fmt</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">)</span>
+
+    <span class="c">## Import</span>
+    <span class="k">if</span> <span class="n">in_fmt</span> <span class="o">==</span> <span class="s">&#39;hdf5&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">hdf5</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">import_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">in_fmt</span> <span class="o">==</span> <span class="s">&#39;tiff&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">tiff</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">tiff</span><span class="o">.</span><span class="n">import_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">in_fmt</span> <span class="o">==</span> <span class="s">&#39;png&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">png</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">png</span><span class="o">.</span><span class="n">import_png</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_fail_pair_conversion</span><span class="p">(</span><span class="n">in_fmt</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">)</span>
 
-</div>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">All converters below this line work in approximately the same way:</span>
-<span class="sd">    - Import from in_file to numpy array</span>
-<span class="sd">    - Export to out_file format</span>
-<span class="sd">This makes the (debatable) assumption that there is no faster method</span>
-<span class="sd">to convert between the two. Future releases will include better handling</span>
-<span class="sd">of these cases.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+    <span class="c">## Export</span>
+    <span class="k">if</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s">&#39;hdf5&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">hdf5</span>
+        <span class="k">return</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">export_hdf5</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s">&#39;tiff&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">tiff</span>
+        <span class="k">return</span> <span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s">&#39;png&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">png</span>
+        <span class="k">return</span> <span class="n">png</span><span class="o">.</span><span class="n">export_png</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_fail_pair_conversion</span><span class="p">(</span><span class="n">in_fmt</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">)</span>
 
-<div class="viewcode-block" id="hdf5_to_tiff"><a class="viewcode-back" href="../../../apidoc/ocpaccess.convert.html#ocpaccess.convert.convert.hdf5_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">hdf5_to_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">tiff</span><span class="o">,</span> <span class="nn">hdf5</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">import_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="tiff_to_hdf5"><a class="viewcode-back" href="../../../apidoc/ocpaccess.convert.html#ocpaccess.convert.convert.tiff_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">tiff_to_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">tiff</span><span class="o">,</span> <span class="nn">hdf5</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">tiff</span><span class="o">.</span><span class="n">import_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">export_hdf5</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+    <span class="k">return</span> <span class="n">_fail_pair_conversion</span><span class="p">(</span><span class="n">in_fmt</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

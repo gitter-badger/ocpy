@@ -20,6 +20,14 @@ ocpaccess.convert.hdf5 module
     :undoc-members:
     :show-inheritance:
 
+ocpaccess.convert.png module
+----------------------------
+
+.. automodule:: ocpaccess.convert.png
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 ocpaccess.convert.tiff module
 -----------------------------
 

@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#module-ocpaccess.convert.convert">ocpaccess.convert.convert module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#module-ocpaccess.convert.hdf5">ocpaccess.convert.hdf5 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#module-ocpaccess.convert.png">ocpaccess.convert.png module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#module-ocpaccess.convert.tiff">ocpaccess.convert.tiff module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocpaccess.convert.html#module-ocpaccess.convert">Module contents</a></li>
 </ul>
@@ -130,13 +131,8 @@
 <div class="section" id="module-ocpaccess.download">
 <span id="ocpaccess-download-module"></span><h2>ocpaccess.download module<a class="headerlink" href="#module-ocpaccess.download" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="ocpaccess.download.convert_files_to_tiff">
-<code class="descclassname">ocpaccess.download.</code><code class="descname">convert_files_to_tiff</code><span class="sig-paren">(</span><em>token</em>, <em>fmt</em>, <em>zoom</em>, <em>x_start</em>, <em>x_stop</em>, <em>y_start</em>, <em>y_stop</em>, <em>file_array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/download.html#convert_files_to_tiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.download.convert_files_to_tiff" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="ocpaccess.download.get_data">
-<code class="descclassname">ocpaccess.download.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>token</em>, <em>x_start</em>, <em>x_stop</em>, <em>y_start</em>, <em>y_stop</em>, <em>z_start</em>, <em>z_stop</em>, <em>zoom</em>, <em>fmt='hdf5'</em>, <em>server='http://openconnecto.me'</em>, <em>location='./'</em>, <em>ask_before_writing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/download.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.download.get_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">ocpaccess.download.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>token</em>, <em>x_start</em>, <em>x_stop</em>, <em>y_start</em>, <em>y_stop</em>, <em>z_start</em>, <em>z_stop</em>, <em>resolution</em>, <em>fmt='hdf5'</em>, <em>server='http://openconnecto.me'</em>, <em>location='./'</em>, <em>ask_before_writing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/download.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.download.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get data from the OCP server.</p>
 <dl class="docutils">
 <dt>Arguments:</dt>
@@ -151,13 +147,13 @@ Internet-facing server. Must include protocol (e.g. <code class="docutils litera
 </tr>
 <tr class="field-odd field"><th class="field-name">fmt:</th><td class="field-body"><code class="docutils literal"><span class="pre">string</span> <span class="pre">:</span> <span class="pre">'hdf5'</span></code> The desired output format</td>
 </tr>
-<tr class="field-even field"><th class="field-name">zoom:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code> Zoom level</td>
+<tr class="field-even field"><th class="field-name">resolution:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code> Resolution level</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Q_start:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code> The lower bound of dimension &#8216;Q&#8217;</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Q_stop:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code> The upper bound of dimension &#8216;Q&#8217;</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">location:</th><td class="field-body"><code class="docutils literal"><span class="pre">string</span> <span class="pre">:</span> <span class="pre">'./'</span></code> The on-disk location where we&#8217;ll create /hdf5 and /tiff</td>
+<tr class="field-odd field"><th class="field-name">location:</th><td class="field-body"><code class="docutils literal"><span class="pre">string</span> <span class="pre">:</span> <span class="pre">'./'</span></code> The on-disk location where we&#8217;ll create /hdf5 and /png</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">ask_before_writing:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><code class="docutils literal"><span class="pre">boolean</span> <span class="pre">:</span> <span class="pre">False</span></code> Whether to ask (y/n) before creating directories. Default value is <cite>False</cite>.</td>

@@ -130,16 +130,6 @@ out_fmt:    Optional. The format of outgoing data, if not guessable</dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="ocpaccess.convert.convert.hdf5_to_tiff">
-<code class="descclassname">ocpaccess.convert.convert.</code><code class="descname">hdf5_to_tiff</code><span class="sig-paren">(</span><em>in_file</em>, <em>out_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/convert.html#hdf5_to_tiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.convert.hdf5_to_tiff" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="ocpaccess.convert.convert.tiff_to_hdf5">
-<code class="descclassname">ocpaccess.convert.convert.</code><code class="descname">tiff_to_hdf5</code><span class="sig-paren">(</span><em>in_file</em>, <em>out_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/convert.html#tiff_to_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.convert.tiff_to_hdf5" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </div>
 <div class="section" id="module-ocpaccess.convert.hdf5">
 <span id="ocpaccess-convert-hdf5-module"></span><h2>ocpaccess.convert.hdf5 module<a class="headerlink" href="#module-ocpaccess.convert.hdf5" title="Permalink to this headline">¶</a></h2>
@@ -169,6 +159,82 @@ numpy_data:     The numpy array to save to HDF5</dd>
 </dd></dl>
 
 </div>
+<div class="section" id="module-ocpaccess.convert.png">
+<span id="ocpaccess-convert-png-module"></span><h2>ocpaccess.convert.png module<a class="headerlink" href="#module-ocpaccess.convert.png" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ocpaccess.convert.png.export_png">
+<code class="descclassname">ocpaccess.convert.png.</code><code class="descname">export_png</code><span class="sig-paren">(</span><em>png_filename</em>, <em>numpy_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/png.html#export_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.png.export_png" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export a numpy array to a png file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>png_filename:   A filename to which to save the png data
+numpy_data:     The numpy array to save to png</dd>
+<dt>Returns:</dt>
+<dd>String. The expanded filename that now holds the png data</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ocpaccess.convert.png.export_png_collection">
+<code class="descclassname">ocpaccess.convert.png.</code><code class="descname">export_png_collection</code><span class="sig-paren">(</span><em>png_filename_base</em>, <em>numpy_data</em>, <em>start_layers_at=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/png.html#export_png_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.png.export_png_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export a numpy array to a set of png files, with each Z-index 2D
+array as its own 2D file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><dl class="first docutils">
+<dt>png_filename_base:     A filename template, such as &#8220;my-image-<a href="#id1"><span class="problematic" id="id2">*</span></a>.png&#8221;</dt>
+<dd>which will lead to a collection of files named
+&#8220;my-image-0.png&#8221;, &#8220;my-image-1.png&#8221;, etc.</dd>
+</dl>
+<p class="last">numpy_data:             The numpy array data to save to png.</p>
+</dd>
+<dt>Returns:</dt>
+<dd>Array. A list of expanded filenames that hold png data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ocpaccess.convert.png.import_png">
+<code class="descclassname">ocpaccess.convert.png.</code><code class="descname">import_png</code><span class="sig-paren">(</span><em>png_filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/png.html#import_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.png.import_png" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a png file into a numpy array.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">png_filename:</th><td class="field-body">A string filename of a png datafile</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd>A numpy array with data from the png file</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ocpaccess.convert.png.import_png_collection">
+<code class="descclassname">ocpaccess.convert.png.</code><code class="descname">import_png_collection</code><span class="sig-paren">(</span><em>png_filename_base</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ocpaccess/convert/png.html#import_png_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ocpaccess.convert.png.import_png_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import all files matching the filename base given via <cite>png_filename_base</cite>.
+Images are ordered by alphabetical order, which means that you <em>MUST</em> 0-pad
+your numbers if they span a power of ten (e.g. 0999-1000 or 09-10). This is
+handled automatically by the complement function, <cite>export_png_collection</cite>.
+Also, look at how nicely these documentation lines are all the same length!</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><dl class="first last docutils">
+<dt>png_filename_base:     An asterisk-wildcard string that should refer</dt>
+<dd>to all TIFFs in the stack. All * are replaced
+according to command-line expansion rules.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>A numpy array holding a 3D dataset</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="module-ocpaccess.convert.tiff">
 <span id="ocpaccess-convert-tiff-module"></span><h2>ocpaccess.convert.tiff module<a class="headerlink" href="#module-ocpaccess.convert.tiff" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -192,7 +258,7 @@ array as its own 2D file.</p>
 <dl class="docutils">
 <dt>Arguments:</dt>
 <dd><dl class="first docutils">
-<dt>tiff_filename_base:     A filename template, such as &#8220;my-image-<a href="#id1"><span class="problematic" id="id2">*</span></a>.tiff&#8221;</dt>
+<dt>tiff_filename_base:     A filename template, such as &#8220;my-image-<a href="#id3"><span class="problematic" id="id4">*</span></a>.tiff&#8221;</dt>
 <dd>which will lead to a collection of files named
 &#8220;my-image-0.tiff&#8221;, &#8220;my-image-1.tiff&#8221;, etc.</dd>
 </dl>
