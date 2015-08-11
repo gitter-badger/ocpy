@@ -127,6 +127,7 @@ def get_data(token,
     files = convert_files_to_png(token, fmt, resolution,
                                   x_start, x_stop,
                                   y_start, y_stop,
+                                  z_start, z_stop,
                                   local_files)
     return files
 
