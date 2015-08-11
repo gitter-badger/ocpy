@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ocpaccess.convert.tiff &mdash; ocpAccess 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ocpAccess 0.0.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../../../index.html" class="icon icon-home"> ocpAccess
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">ocpAccess</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>ocpaccess.convert.tiff</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for ocpaccess.convert.tiff</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<div class="viewcode-block" id="import_tiff"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.tiff.import_tiff">[docs]</a><span class="k">def</span> <span class="nf">import_tiff</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import a TIFF file into a numpy array.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tiff_filename:  A string filename of a TIFF datafile</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A numpy array with data from the TIFF file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Expand filename to be absolute</span>
+    <span class="n">tiff_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Could not load file {0} for conversion.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">))</span>
+        <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="export_tiff"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.tiff.export_tiff">[docs]</a><span class="k">def</span> <span class="nf">export_tiff</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">,</span> <span class="n">numpy_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export a numpy array to a TIFF file.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tiff_filename:  A filename to which to save the TIFF data</span>
+<span class="sd">        numpy_data:     The numpy array to save to TIFF</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        String. The expanded filename that now holds the TIFF data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Expand filename to be absolute</span>
+    <span class="n">tiff_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">numpy_data</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s">&#39;uint8&#39;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Datatype is not uint8, you may experience a known PIL bug. Continuing...&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;File {0} already exists, stopping...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">numpy_data</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Could not save TIFF file {0}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tiff_filename</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">tiff_filename</span>
+
+
+</div>
+<div class="viewcode-block" id="export_tiff_collection"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.tiff.export_tiff_collection">[docs]</a><span class="k">def</span> <span class="nf">export_tiff_collection</span><span class="p">(</span><span class="n">tiff_filename_base</span><span class="p">,</span> <span class="n">numpy_data</span><span class="p">,</span> <span class="n">start_layers_at</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export a numpy array to a set of TIFF files, with each Z-index 2D</span>
+<span class="sd">    array as its own 2D file.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tiff_filename_base:     A filename template, such as &quot;my-image-*.tiff&quot;</span>
+<span class="sd">                                which will lead to a collection of files named</span>
+<span class="sd">                                &quot;my-image-0.tiff&quot;, &quot;my-image-1.tiff&quot;, etc.</span>
+<span class="sd">        numpy_data:             The numpy array data to save to TIFF.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Array. A list of expanded filenames that hold TIFF data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_extension</span> <span class="o">=</span> <span class="n">tiff_filename_base</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;tif&#39;</span><span class="p">,</span> <span class="s">&#39;tiff&#39;</span><span class="p">]:</span>
+        <span class="c"># Filename is &quot;name*.tif[f]&quot;, set file_base to &quot;name*&quot;.</span>
+        <span class="n">file_base</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tiff_filename_base</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Filename is &quot;name*&quot;, set file_base to &quot;name*&quot;.</span>
+        <span class="c"># That is, extension wasn&#39;t included.</span>
+        <span class="n">file_base</span> <span class="o">=</span> <span class="n">tiff_filename_base</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s">&quot;.tiff&quot;</span>
+
+    <span class="n">file_base_array</span> <span class="o">=</span> <span class="n">file_base</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+
+    <span class="c"># The array of filenames to return</span>
+    <span class="n">output_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># Filename 0-padding</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">start_layers_at</span>
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">numpy_data</span><span class="p">:</span>
+        <span class="n">layer_filename</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_base_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">file_extension</span>
+        <span class="n">output_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">export_tiff</span><span class="p">(</span><span class="n">layer_filename</span><span class="p">,</span> <span class="n">layer</span><span class="p">))</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">output_files</span>
+</div>
+<div class="viewcode-block" id="import_tiff_collection"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.tiff.import_tiff_collection">[docs]</a><span class="k">def</span> <span class="nf">import_tiff_collection</span><span class="p">(</span><span class="n">tiff_filename_base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import all files matching the filename base given via `tiff_filename_base`.</span>
+<span class="sd">    Images are ordered by alphabetical order, which means that you *MUST* 0-pad</span>
+<span class="sd">    your numbers if they span a power of ten (e.g. 0999-1000 or 09-10). This is</span>
+<span class="sd">    handled automatically by the complement function, `export_tiff_collection`.</span>
+<span class="sd">    Also, look at how nicely these documentation lines are all the same length!</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tiff_filename_base:     An asterisk-wildcard string that should refer</span>
+<span class="sd">                                to all TIFFs in the stack. All * are replaced</span>
+<span class="sd">                                according to command-line expansion rules.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A numpy array holding a 3D dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># We expect images to be indexed by their alphabetical order.</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">tiff_filename_base</span><span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="n">numpy_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">numpy_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">import_tiff</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">numpy_data</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, ocp.me.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

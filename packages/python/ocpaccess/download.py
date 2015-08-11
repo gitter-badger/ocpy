@@ -18,7 +18,8 @@ def get_info(token, server=DEFAULT_SERVER):
     Get information about a dataset from its token, using the /info endpoint.
 
     Arguments:
-        token:      The token identifying the dataset to investigate
+        :token:     ``string`` The token identifying the dataset to investigate
+
     Returns:
         JSON object containing the content of the /info page.
     """
@@ -40,14 +41,14 @@ def get_data(token,
     Get data from the OCP server.
 
     Arguments:
-        server:                 Internet-facing server
-        token:                  Token to identify data to download
-        fmt:                    The desired output format
-        zoom:                   Zoom level (starts at 0)
-        Q_start:                The lower bound of dimension 'Q'
-        Q_stop:                 The upper bound of dimension 'Q'
-        location:               The on-disk location where we'll create /hdf5 and /tiff
-        ask_before_writing:     Ask (y/n) before creating directories.
+        :server:                ``string`` Internet-facing server. Should include protocol (e.g. ``https``)
+        :token:                 ``string`` Token to identify data to download
+        :fmt:                   ``string`` The desired output format
+        :zoom:                  ``int`` Zoom level (starts at 0)
+        :Q_start:               ``int`` The lower bound of dimension 'Q'
+        :Q_stop:                ``int`` The upper bound of dimension 'Q'
+        :location:              ``string`` The on-disk location where we'll create /hdf5 and /tiff
+        :ask_before_writing:    ``boolean`` Whether to ask (y/n) before creating directories. Default value is `False`.
 
     Returns:
         None
@@ -122,7 +123,12 @@ def get_data(token,
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
     # print([i for i in local_files])
-    convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, local_files)
+    files = convert_files_to_tiff(token, fmt, zoom,
+                                  x_start, x_stop,
+                                  y_start, y_stop,
+                                  local_files)
+    return files
+
 
 
 def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, file_array):
@@ -137,6 +143,8 @@ def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, fi
         f = h5py.File(hdf_file, "r")
         # OCP stores data inside the 'cutout' h5 dataset
         data_layers = f.get('CUTOUT')
+
+        out_files = []
         for layer in data_layers:
             # Filename is formatted like the request URL but `/` is `-`
             tiff_file = "-".join([
@@ -146,10 +154,12 @@ def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, fi
                 str(i)
             ]) + ".tiff"
 
-            convert.tiff.export_tiff("tiff/" + tiff_file, layer)
+            out_files.append(
+                convert.tiff.export_tiff("tiff/" + tiff_file, layer))
             print(".", end="")
             i += 1
         print("\n")
+        return out_files
 
 
 
