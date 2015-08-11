@@ -133,13 +133,14 @@ def get_data(token,
 def convert_files_to_png(token, fmt, resolution,
                         x_start, x_stop,
                         y_start, y_stop,
+                        z_start, z_stop,
                         file_array):
     # Because we downloaded these files in sequence by z-index
     # (which is bad, it's better to mosaic the coords in x & y as well)
     # we can simply 'slice' them into individual png files so they're 1
     # unit 'thick' (like a virtual microtome.)
-    i = 1
-    print("Converting HDF5 files to single-layer TIFFs.")
+    i = z_start
+    print("Converting HDF5 files to single-layer PNGs.")
     for hdf_file in file_array:
         print("Slicing " + hdf_file)
         f = h5py.File(hdf_file, "r")
@@ -153,7 +154,7 @@ def convert_files_to_png(token, fmt, resolution,
                 token, fmt, str(resolution),
                 str(x_start) + "," + str(x_stop),
                 str(y_start) + "," + str(y_stop),
-                str(i)
+                str(i).zfill(6)
             ]) + ".png"
 
             out_files.append(
