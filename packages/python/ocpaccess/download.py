@@ -185,6 +185,9 @@ def _download_data(server, token, fmt, zoom, x_start, x_stop, y_start, y_stop, z
 
     # Create a `requests` object.
     req = requests.get(request_url, stream=True)
+    if req.status_code is not 200:
+        print(" !! Error encountered !!")
+        return False
     # Now download (chunking to 1024 bytes from the stream)
     with open(file_name, 'wb+') as f:
         for chunk in req.iter_content(chunk_size=1024):
