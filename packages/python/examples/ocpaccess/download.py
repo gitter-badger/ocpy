@@ -130,10 +130,7 @@ def get_data(token,
                                   local_files)
     return files
 
-def convert_files_to_png(token, fmt, resolution,
-                        x_start, x_stop,
-                        y_start, y_stop,
-                        file_array):
+
     # Because we downloaded these files in sequence by z-index
     # (which is bad, it's better to mosaic the coords in x & y as well)
     # we can simply 'slice' them into individual png files so they're 1
