@@ -5,7 +5,7 @@ import os
 import numpy
 from PIL import Image
 
-import convert.tiff
+import convert.png
 
 
 DEFAULT_SERVER =    'http://openconnecto.me'
@@ -48,7 +48,7 @@ def get_data(token,
         :zoom:                  ``int`` Zoom level
         :Q_start:               ``int`` The lower bound of dimension 'Q'
         :Q_stop:                ``int`` The upper bound of dimension 'Q'
-        :location:              ``string : './'`` The on-disk location where we'll create /hdf5 and /tiff
+        :location:              ``string : './'`` The on-disk location where we'll create /hdf5 and /png
         :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.
 
     Returns:
@@ -70,9 +70,9 @@ def get_data(token,
     os.chdir(location)
 
     try:
-        os.mkdir('hdf5'); os.mkdir('tiff');
+        os.mkdir('hdf5'); os.mkdir('png');
     except Exception as e:
-        print("Data directories already exist, not creating /hdf5 or /tiff.")
+        print("Data directories already exist, not creating /hdf5 or /png.")
 
     if ask_before_writing:
         confirm = raw_input("The data will be saved to /" + location + ".\n" +
@@ -124,18 +124,16 @@ def get_data(token,
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
     # print([i for i in local_files])
-    files = convert_files_to_tiff(token, fmt, zoom,
+    files = convert_files_to_png(token, fmt, zoom,
                                   x_start, x_stop,
                                   y_start, y_stop,
                                   local_files)
     return files
 
 
-
-def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, file_array):
     # Because we downloaded these files in sequence by z-index
     # (which is bad, it's better to mosaic the coords in x & y as well)
-    # we can simply 'slice' them into individual tiff files so they're 1
+    # we can simply 'slice' them into individual png files so they're 1
     # unit 'thick' (like a virtual microtome.)
     i = 1
     print("Converting HDF5 files to single-layer TIFFs.")
@@ -148,15 +146,15 @@ def convert_files_to_tiff(token, fmt, zoom, x_start, x_stop, y_start, y_stop, fi
         out_files = []
         for layer in data_layers:
             # Filename is formatted like the request URL but `/` is `-`
-            tiff_file = "-".join([
+            png_file = "-".join([
                 token, fmt, str(zoom),
                 str(x_start) + "," + str(x_stop),
                 str(y_start) + "," + str(y_stop),
                 str(i)
-            ]) + ".tiff"
+            ]) + ".png"
 
             out_files.append(
-                convert.tiff.export_tiff("tiff/" + tiff_file, layer))
+                convert.png.export_png("png/" + png_file, layer))
             print(".", end="")
             i += 1
         print("\n")
