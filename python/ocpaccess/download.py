@@ -10,7 +10,6 @@ import convert.tiff
 
 DEFAULT_SERVER =    'http://openconnecto.me'
 DEFAULT_FORMAT =    'hdf5'
-DEFAULT_ZOOM   =    1
 CHUNK_DEPTH    =    16
 
 
@@ -32,8 +31,8 @@ def get_data(token,
              x_start, x_stop,
              y_start, y_stop,
              z_start, z_stop,
+             zoom,
              fmt=DEFAULT_FORMAT,
-             zoom=DEFAULT_ZOOM,
              server=DEFAULT_SERVER,
              location="./",
              ask_before_writing=False):
@@ -43,10 +42,10 @@ def get_data(token,
     Arguments:
         server:                 Internet-facing server
         token:                  Token to identify data to download
-        fmt:                    The desired output format (see ocp_Convert repository to convert locally)
+        fmt:                    The desired output format
         zoom:                   Zoom level (starts at 0)
-        Q_start:                   The lower bound of dimension 'Q'
-        Q_stop:                   The upper bound of dimension 'Q'
+        Q_start:                The lower bound of dimension 'Q'
+        Q_stop:                 The upper bound of dimension 'Q'
         location:               The on-disk location where we'll create /hdf5 and /tiff
         ask_before_writing:     Ask (y/n) before creating directories.
 
