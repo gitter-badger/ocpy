@@ -1,4 +1,5 @@
 import imp
+from convert import *
 
 _required_packages = [
             'requests',

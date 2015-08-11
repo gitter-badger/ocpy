@@ -4,7 +4,7 @@ FILE_FORMATS = {
     # Format.lower()    # File extension. By convention, use the first by default
     'hdf5':             ['hdf5', 'h5', 'hdf'],
     'tiff':             ['tiff', 'tif'],
-    'png':              ['png],
+    'png':              ['png'],
     'ramon':            ['m'],
     'matlab':           ['m', 'mat'],
 }
@@ -103,9 +103,9 @@ def convert(in_file, out_file, in_fmt="", out_fmt=""):
     # Get formats, either by explicitly naming them or by guessing.
     # TODO: It'd be neat to check here if an explicit fmt matches the guess.
     in_fmt = in_fmt.lower() or _guess_format_from_extension(
-             in_file.slice('.')[-1].lower())
+             in_file.split('.')[-1].lower())
     out_fmt = out_fmt.lower() or _guess_format_from_extension(
-              out_file.slice('.')[-1].lower())
+              out_file.split('.')[-1].lower())
 
     if not in_fmt or not out_fmt:
         print("Cannot determine conversion formats.")
@@ -117,35 +117,32 @@ def convert(in_file, out_file, in_fmt="", out_fmt=""):
         shutil.copyfileobj(in_file, out_file)
         return out_file
 
-    if in_fmt is 'hdf5':
-        if out_fmt is 'tiff':
-            return hdf5_to_tiff(in_file, out_file)
-        else:
-            return _fail_pair_conversion(in_fmt, out_fmt)
-    elif in_fmt is 'tiff':
-        if out_fmt is 'hdf5':
-            return tiff_to_hdf5(in_file, out_file)
-        else:
-            return _fail_pair_conversion(in_fmt, out_fmt)
+
+    ## Import
+    if in_fmt == 'hdf5':
+        import hdf5
+        data = hdf5.import_hdf5(in_file)
+    elif in_fmt == 'tiff':
+        import tiff
+        data = tiff.import_tiff(in_file)
+    elif in_fmt == 'png':
+        import png
+        data = png.import_png(in_file)
+    else:
+        return _fail_pair_conversion(in_fmt, out_fmt)
+
+    ## Export
+    if out_fmt == 'hdf5':
+        import hdf5
+        return hdf5.export_hdf5(out_file, data)
+    elif out_fmt == 'tiff':
+        import tiff
+        return tiff.export_tiff(out_file, data)
+    elif out_fmt == 'png':
+        import png
+        return png.export_png(out_file, data)
     else:
         return _fail_pair_conversion(in_fmt, out_fmt)
 
 
-"""
-All converters below this line work in approximately the same way:
-    - Import from in_file to numpy array
-    - Export to out_file format
-This makes the (debatable) assumption that there is no faster method
-to convert between the two. Future releases will include better handling
-of these cases.
-"""
-
-def hdf5_to_tiff(in_file, out_file):
-    import tiff, hdf5
-    data = hdf5.import_hdf5(in_file)
-    return tiff.export_tiff(out_file, data)
-
-def tiff_to_hdf5(in_file, out_file):
-    import tiff, hdf5
-    data = tiff.import_tiff(in_file)
-    return hdf5.export_hdf5(out_file, data)
+    return _fail_pair_conversion(in_fmt, out_fmt)
