@@ -124,7 +124,7 @@
 <span class="n">CHUNK_DEPTH</span>    <span class="o">=</span>    <span class="mi">16</span>
 
 
-<div class="viewcode-block" id="get_info"><a class="viewcode-back" href="../../ocpaccess.html#ocpaccess.download.get_info">[docs]</a><span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">):</span>
+<div class="viewcode-block" id="get_info"><a class="viewcode-back" href="../../apidoc/ocpaccess.html#ocpaccess.download.get_info">[docs]</a><span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get information about a dataset from its token, using the /info endpoint.</span>
 
@@ -139,7 +139,7 @@
     <span class="k">return</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
 </div>
-<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../ocpaccess.html#ocpaccess.download.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">token</span><span class="p">,</span>
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../apidoc/ocpaccess.html#ocpaccess.download.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">token</span><span class="p">,</span>
              <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
              <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
              <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span>
@@ -152,17 +152,18 @@
 <span class="sd">    Get data from the OCP server.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        :server:                ``string`` Internet-facing server. Should include protocol (e.g. ``https``)</span>
+<span class="sd">        :server:                ``string : DEFAULT_SERVER``</span>
+<span class="sd">                                Internet-facing server. Must include protocol (e.g. ``https``).</span>
 <span class="sd">        :token:                 ``string`` Token to identify data to download</span>
-<span class="sd">        :fmt:                   ``string`` The desired output format</span>
-<span class="sd">        :zoom:                  ``int`` Zoom level (starts at 0)</span>
+<span class="sd">        :fmt:                   ``string : &#39;hdf5&#39;`` The desired output format</span>
+<span class="sd">        :zoom:                  ``int`` Zoom level</span>
 <span class="sd">        :Q_start:               ``int`` The lower bound of dimension &#39;Q&#39;</span>
 <span class="sd">        :Q_stop:                ``int`` The upper bound of dimension &#39;Q&#39;</span>
-<span class="sd">        :location:              ``string`` The on-disk location where we&#39;ll create /hdf5 and /tiff</span>
-<span class="sd">        :ask_before_writing:    ``boolean`` Whether to ask (y/n) before creating directories. Default value is `False`.</span>
+<span class="sd">        :location:              ``string : &#39;./&#39;`` The on-disk location where we&#39;ll create /hdf5 and /tiff</span>
+<span class="sd">        :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None</span>
+<span class="sd">        :``string[]``: Filenames that were saved to disk.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">total_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_stop</span> <span class="o">-</span> <span class="n">x_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_stop</span> <span class="o">-</span> <span class="n">y_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_stop</span> <span class="o">-</span> <span class="n">z_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">14.</span><span class="o">/</span><span class="p">(</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">16.</span><span class="p">))</span>
@@ -234,10 +235,15 @@
     <span class="c"># We now have an array, `local_files`, holding all of the</span>
     <span class="c"># files that we downloaded.</span>
     <span class="c"># print([i for i in local_files])</span>
-    <span class="n">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">local_files</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span>
+                                  <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
+                                  <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
+                                  <span class="n">local_files</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">files</span>
+
 
 </div>
-<div class="viewcode-block" id="convert_files_to_tiff"><a class="viewcode-back" href="../../ocpaccess.html#ocpaccess.download.convert_files_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">file_array</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_files_to_tiff"><a class="viewcode-back" href="../../apidoc/ocpaccess.html#ocpaccess.download.convert_files_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">convert_files_to_tiff</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">file_array</span><span class="p">):</span>
     <span class="c"># Because we downloaded these files in sequence by z-index</span>
     <span class="c"># (which is bad, it&#39;s better to mosaic the coords in x &amp; y as well)</span>
     <span class="c"># we can simply &#39;slice&#39; them into individual tiff files so they&#39;re 1</span>
@@ -249,6 +255,8 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">hdf_file</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
         <span class="c"># OCP stores data inside the &#39;cutout&#39; h5 dataset</span>
         <span class="n">data_layers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CUTOUT&#39;</span><span class="p">)</span>
+
+        <span class="n">out_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">data_layers</span><span class="p">:</span>
             <span class="c"># Filename is formatted like the request URL but `/` is `-`</span>
             <span class="n">tiff_file</span> <span class="o">=</span> <span class="s">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
@@ -258,10 +266,12 @@
                 <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="p">])</span> <span class="o">+</span> <span class="s">&quot;.tiff&quot;</span>
 
-            <span class="n">convert</span><span class="o">.</span><span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="s">&quot;tiff/&quot;</span> <span class="o">+</span> <span class="n">tiff_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+            <span class="n">out_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">convert</span><span class="o">.</span><span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="s">&quot;tiff/&quot;</span> <span class="o">+</span> <span class="n">tiff_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">))</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out_files</span>
 
 
 </div>
@@ -274,12 +284,12 @@
     <span class="c"># Build a string that holds the full URL to request.</span>
 
     <span class="n">request_data</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">server</span><span class="p">,</span> <span class="s">&#39;ocp&#39;</span><span class="p">,</span> <span class="s">&#39;ca&#39;</span><span class="p">,</span>        <span class="c"># Boilerplate server URL</span>
-        <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">zoom</span><span class="p">),</span>      <span class="c"># Set token, format, and zoom</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">x_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_stop</span><span class="p">),</span><span class="c"># X</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">y_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_stop</span><span class="p">),</span><span class="c"># Y</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">z_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_stop</span><span class="p">),</span><span class="c"># Z</span>
-        <span class="s">&quot;&quot;</span>                          <span class="c"># Trailing &#39;/&#39;</span>
+        <span class="n">server</span><span class="p">,</span> <span class="s">&#39;ocp&#39;</span><span class="p">,</span> <span class="s">&#39;ca&#39;</span><span class="p">,</span>                <span class="c"># Boilerplate server URL</span>
+        <span class="n">token</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">zoom</span><span class="p">),</span>              <span class="c"># Set token, format, and zoom</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">x_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_stop</span><span class="p">),</span>   <span class="c"># X</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">y_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_stop</span><span class="p">),</span>   <span class="c"># Y</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">z_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_stop</span><span class="p">),</span>   <span class="c"># Z</span>
+        <span class="s">&quot;&quot;</span>                                  <span class="c"># Trailing &#39;/&#39;</span>
     <span class="p">]</span>
 
     <span class="n">request_url</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">request_data</span><span class="p">)</span>
@@ -287,6 +297,9 @@
 
     <span class="c"># Create a `requests` object.</span>
     <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request_url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot; !! Error encountered !!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">False</span>
     <span class="c"># Now download (chunking to 1024 bytes from the stream)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s">&#39;wb+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>

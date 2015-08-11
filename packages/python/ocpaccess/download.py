@@ -41,17 +41,18 @@ def get_data(token,
     Get data from the OCP server.
 
     Arguments:
-        :server:                ``string`` Internet-facing server. Should include protocol (e.g. ``https``)
+        :server:                ``string : DEFAULT_SERVER``
+                                Internet-facing server. Must include protocol (e.g. ``https``).
         :token:                 ``string`` Token to identify data to download
-        :fmt:                   ``string`` The desired output format
-        :zoom:                  ``int`` Zoom level (starts at 0)
+        :fmt:                   ``string : 'hdf5'`` The desired output format
+        :zoom:                  ``int`` Zoom level
         :Q_start:               ``int`` The lower bound of dimension 'Q'
         :Q_stop:                ``int`` The upper bound of dimension 'Q'
-        :location:              ``string`` The on-disk location where we'll create /hdf5 and /tiff
-        :ask_before_writing:    ``boolean`` Whether to ask (y/n) before creating directories. Default value is `False`.
+        :location:              ``string : './'`` The on-disk location where we'll create /hdf5 and /tiff
+        :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.
 
     Returns:
-        None
+        :``string[]``: Filenames that were saved to disk.
     """
 
     total_size = (x_stop - x_start) * (y_stop - y_start) * (z_stop - z_start) * (14./(1000.*1000.*16.))
@@ -172,12 +173,12 @@ def _download_data(server, token, fmt, zoom, x_start, x_stop, y_start, y_stop, z
     # Build a string that holds the full URL to request.
 
     request_data = [
-        server, 'ocp', 'ca',        # Boilerplate server URL
-        token, fmt, str(zoom),      # Set token, format, and zoom
-        str(x_start) + "," + str(x_stop),# X
-        str(y_start) + "," + str(y_stop),# Y
-        str(z_start) + "," + str(z_stop),# Z
-        ""                          # Trailing '/'
+        server, 'ocp', 'ca',                # Boilerplate server URL
+        token, fmt, str(zoom),              # Set token, format, and zoom
+        str(x_start) + "," + str(x_stop),   # X
+        str(y_start) + "," + str(y_stop),   # Y
+        str(z_start) + "," + str(z_stop),   # Z
+        ""                                  # Trailing '/'
     ]
 
     request_url = '/'.join(request_data)

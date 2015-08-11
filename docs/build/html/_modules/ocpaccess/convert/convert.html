@@ -184,7 +184,7 @@
 
 
 
-<div class="viewcode-block" id="convert"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.convert.convert">[docs]</a><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">in_fmt</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">out_fmt</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="convert"><a class="viewcode-back" href="../../../apidoc/ocpaccess.convert.html#ocpaccess.convert.convert.convert">[docs]</a><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">in_fmt</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">out_fmt</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts in_file to out_file, guessing datatype in the absence of</span>
 <span class="sd">    in_fmt and out_fmt.</span>
@@ -250,12 +250,12 @@
 <span class="sd">of these cases.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="hdf5_to_tiff"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.convert.hdf5_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">hdf5_to_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
+<div class="viewcode-block" id="hdf5_to_tiff"><a class="viewcode-back" href="../../../apidoc/ocpaccess.convert.html#ocpaccess.convert.convert.hdf5_to_tiff">[docs]</a><span class="k">def</span> <span class="nf">hdf5_to_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">tiff</span><span class="o">,</span> <span class="nn">hdf5</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">import_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tiff</span><span class="o">.</span><span class="n">export_tiff</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="tiff_to_hdf5"><a class="viewcode-back" href="../../../ocpaccess.convert.html#ocpaccess.convert.convert.tiff_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">tiff_to_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
+<div class="viewcode-block" id="tiff_to_hdf5"><a class="viewcode-back" href="../../../apidoc/ocpaccess.convert.html#ocpaccess.convert.convert.tiff_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">tiff_to_hdf5</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">tiff</span><span class="o">,</span> <span class="nn">hdf5</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">tiff</span><span class="o">.</span><span class="n">import_tiff</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hdf5</span><span class="o">.</span><span class="n">export_hdf5</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
