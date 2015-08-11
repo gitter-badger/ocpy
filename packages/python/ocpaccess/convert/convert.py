@@ -4,6 +4,7 @@ FILE_FORMATS = {
     # Format.lower()    # File extension. By convention, use the first by default
     'hdf5':             ['hdf5', 'h5', 'hdf'],
     'tiff':             ['tiff', 'tif'],
+    'png':              ['png],
     'ramon':            ['m'],
     'matlab':           ['m', 'mat'],
 }
