@@ -26,7 +26,7 @@ def get_info(token, server=DEFAULT_SERVER):
     url = '/'.join([server, 'ocp', 'ca', token, 'info', ''])
     req = requests.get(url)
     return req.json()
-
+    
 
 def get_data(token,
              x_start, x_stop,
@@ -52,7 +52,7 @@ def get_data(token,
         :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.
 
     Returns:
-        :``string[]``: Filenames that were saved to disk.
+        :``(string[], string[])``: (Filenames that were saved to disk, file downloads that failed)
     """
 
     total_size = (x_stop - x_start) * (y_stop - y_start) * (z_stop - z_start) * (14./(1000.*1000.*16.))
@@ -61,6 +61,8 @@ def get_data(token,
 
     # Figure out where we'll be saving files. If the directories don't
     # exist, let's create them now.
+    cur_dir = os.getcwd()
+
     location = location if location else os.getcwd()
     try:
         os.mkdir(location)
@@ -77,25 +79,29 @@ def get_data(token,
     if ask_before_writing:
         confirm = raw_input("The data will be saved to /" + location + ".\n" +
               "Continue? [yn] ")
-
         if confirm is 'n':
-            return;
+            return False;
 
     fmt = "hdf5" # Hard-coded for now to minimize server-load
 
-    # The array of local files that we create
+    # The array of local files that we create, and the array of
+    # filenames whose download failed
     local_files = []
+    failed_files = []
 
     # OCP stores cubes of z-size = CHUNK_DEPTH. To be efficient,
     # we'll download in CHUNK_DEPTH-z-slice units.
     if z_stop - z_start <= CHUNK_DEPTH:
         # We don't have to split, just download.
-        local_files.append(
-            _download_data(server, token, fmt, resolution,
+        result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_start, z_stop, "hdf5")
-        )
+        if result[0] is True:
+            # Success, save filename to local_files
+            local_files.append(result[1])
+        else:
+            failed_files.append(result[1])
     else:
         # We need to split into CHUNK_DEPTH-slice chunks.
         z_last = z_start
@@ -104,20 +110,26 @@ def get_data(token,
             # z_stop, whichever is smaller
             if z_stop <= z_last + CHUNK_DEPTH:
                 # Download from z_last to z_stop
-                local_files.append(
-                    _download_data(server, token, fmt, resolution,
+                result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_stop, "hdf5")
-                )
+                if result[0] is True:
+                    # Success, save filename to local_files
+                    local_files.append(result[1])
+                else:
+                    failed_files.append(result[1])
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
-                local_files.append(
-                    _download_data(server, token, fmt, resolution,
+                result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_last + CHUNK_DEPTH, "hdf5")
-                )
+                if result[0] is True:
+                    # Success, save filename to local_files
+                    local_files.append(result[1])
+                else:
+                    failed_files.append(result[1])
 
             z_last += CHUNK_DEPTH + 1
 
@@ -129,7 +141,9 @@ def get_data(token,
                                   y_start, y_stop,
                                   z_start, z_stop,
                                   local_files)
-    return files
+    # Return to starting directory
+    os.chdir(cur_dir)
+    return (files, failed_files)
 
 def convert_files_to_png(token, fmt, resolution,
                         x_start, x_stop,
@@ -165,12 +179,16 @@ def convert_files_to_png(token, fmt, resolution,
         print("\n")
         return out_files
 
-
+resul
 
 def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
-    """
+    if result[0] is True:
+        # Success, save filename to local_files
+        local_files.append(result[1])""
+    else:
+        failed_files.append(result[1])
     Download the actual data from the server. Uses 1MB chunks when saving.
-    Returns the filename stored locally. Specify a save-location target in get_data.
+    Returns (success, filename stored locally). Specify a save-location target in get_data.
     """
     print("Downloading " + str(z_start) + "-" + str(z_stop))
     # Build a string that holds the full URL to request.
@@ -191,7 +209,7 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
     req = requests.get(request_url, stream=True)
     if req.status_code is not 200:
         print(" !! Error encountered !!")
-        return False
+        return (False, file_name)
     # Now download (chunking to 1024 bytes from the stream)
     with open(file_name, 'wb+') as f:
         for chunk in req.iter_content(chunk_size=1024):
@@ -199,4 +217,4 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
                 f.write(chunk)
                 f.flush()
 
-    return file_name
+    return (True, file_name)
