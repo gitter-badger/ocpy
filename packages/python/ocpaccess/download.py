@@ -175,7 +175,6 @@ def convert_files_to_png(token, fmt, resolution,
             out_files.append(
                 convert.png.export_png("png/" + png_file, numpy.array(layer)))
             i += 1
-        print("\n")
     return out_files
 
 
