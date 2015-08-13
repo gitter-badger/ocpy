@@ -51,12 +51,10 @@ def export_png(png_filename, numpy_data):
         return False
 
     try:
-        print(numpy_data)
-        if numpy_data.dtype.name is not 'uint8':
+        if numpy_data.dtype.name != 'uint8':
             m = 'I'
             img = Image.fromarray(numpy_data, mode=m)
         else:
-            print("uint8 Data Export")
             img = Image.fromarray(numpy_data)
         img.save(png_filename)
     except Exception as e:

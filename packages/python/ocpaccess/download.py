@@ -135,7 +135,7 @@ def get_data(token,
 
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded.
-    # print([i for i in local_files])
+    print([i for i in local_files])
     files = convert_files_to_png(token, fmt, resolution,
                                   x_start, x_stop,
                                   y_start, y_stop,
@@ -176,7 +176,7 @@ def convert_files_to_png(token, fmt, resolution,
                 convert.png.export_png("png/" + png_file, numpy.array(layer)))
             i += 1
         print("\n")
-        return out_files
+    return out_files
 
 
 
