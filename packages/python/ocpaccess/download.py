@@ -101,7 +101,7 @@ def get_data(token,
             print(" !! Failed on " + result[1])
             failed_files.append(result[1])
         else:
-            local_files.append(result[0])
+            local_files.append(result[1])
     else:
         # We need to split into CHUNK_DEPTH-slice chunks.
         z_last = z_start
@@ -118,7 +118,7 @@ def get_data(token,
                     print(" !! Failed on " + result[1])
                     failed_files.append(result[1])
                 else:
-                    local_files.append(result[0])
+                    local_files.append(result[1])
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
                 result = _download_data(server, token, fmt, resolution,
@@ -129,7 +129,7 @@ def get_data(token,
                     print(" !! Failed on " + result[1])
                     failed_files.append(result[1])
                 else:
-                    local_files.append(result[0])
+                    local_files.append(result[1])
 
             z_last += CHUNK_DEPTH + 1
 
@@ -143,7 +143,7 @@ def get_data(token,
                                   local_files)
     # Return to starting directory
     os.chdir(cur_dir)
-    return files
+    return (files, failed_files)
 
 def convert_files_to_png(token, fmt, resolution,
                         x_start, x_stop,
