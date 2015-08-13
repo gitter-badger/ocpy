@@ -94,11 +94,9 @@ def convert(in_file, out_file, in_fmt="", out_fmt=""):
     out_file = os.path.expanduser(out_file)
 
     if os.path.exists(out_file):
-        print("Output file {0} already exists, stopping...".format(out_file))
-        return False
+        raise IOError("Output file {0} already exists, stopping...".format(out_file))
     if not os.path.exists(in_file):
-        print("Input file {0} does not exist, stopping...".format(in_file))
-        return False
+        raise IOError("Input file {0} does not exist, stopping...".format(in_file))
 
     # Get formats, either by explicitly naming them or by guessing.
     # TODO: It'd be neat to check here if an explicit fmt matches the guess.
