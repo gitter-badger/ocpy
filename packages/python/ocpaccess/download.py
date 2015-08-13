@@ -26,7 +26,7 @@ def get_info(token, server=DEFAULT_SERVER):
     url = '/'.join([server, 'ocp', 'ca', token, 'info', ''])
     req = requests.get(url)
     return req.json()
-    
+
 
 def get_data(token,
              x_start, x_stop,
@@ -145,6 +145,7 @@ def get_data(token,
     os.chdir(cur_dir)
     return (files, failed_files)
 
+
 def convert_files_to_png(token, fmt, resolution,
                         x_start, x_stop,
                         y_start, y_stop,
@@ -179,14 +180,10 @@ def convert_files_to_png(token, fmt, resolution,
         print("\n")
         return out_files
 
-resul
+
 
 def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
-    if result[0] is True:
-        # Success, save filename to local_files
-        local_files.append(result[1])""
-    else:
-        failed_files.append(result[1])
+    """
     Download the actual data from the server. Uses 1MB chunks when saving.
     Returns (success, filename stored locally). Specify a save-location target in get_data.
     """
