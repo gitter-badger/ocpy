@@ -1,8 +1,9 @@
+from enums import *
 
 DEFAULT_ID                  = -1
 DEFAULT_CONFIDENCE          = 00
 DEFAULT_DYNAMIC_METADATA    = {}
-DEFAULT_STATUS              = ''
+DEFAULT_STATUS              = eRAMONAnnoStatus.DEFAULT
 DEFAULT_AUTHOR              = ''
 
 class RAMONBase(object):
@@ -30,12 +31,23 @@ class RAMONBase(object):
         self._status = status
         self._author = author
 
+
     @property
     def id(self):
         return self._id
-
     @id.setter
     def id(self, value):
-        if type(value) is int:
-            return self._id = value
-        else:
+        # You may not set the _id after instantiation
+        return False
+
+    @property
+    def status(self):
+        return self._status
+    @status.setter
+    def status(self, value):
+        try:
+            r = eRAMONAnnoStatus.reverse_mapping[value]
+        except:
+            raise InvalidEnumerationException()
+            return False
+        self._status = value
