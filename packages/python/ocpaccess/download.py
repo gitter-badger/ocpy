@@ -91,12 +91,15 @@ def get_data(token,
     # we'll download in CHUNK_DEPTH-z-slice units.
     if z_stop - z_start <= CHUNK_DEPTH:
         # We don't have to split, just download.
-        local_files.append(
-            _download_data(server, token, fmt, resolution,
+        result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_start, z_stop, "hdf5")
-        )
+        if result[0] is False:
+            print(" !! Failed on " + result[1])
+            failed_files.append(result[1])
+        else:
+            local_files.append(result[0])
     else:
         # We need to split into CHUNK_DEPTH-slice chunks.
         z_last = z_start
@@ -105,20 +108,26 @@ def get_data(token,
             # z_stop, whichever is smaller
             if z_stop <= z_last + CHUNK_DEPTH:
                 # Download from z_last to z_stop
-                local_files.append(
-                    _download_data(server, token, fmt, resolution,
+                result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_stop, "hdf5")
-                )
+                if result[0] is False:
+                    print(" !! Failed on " + result[1])
+                    failed_files.append(result[1])
+                else:
+                    local_files.append(result[0])
             else:
                 # Download from z_last to z_last + CHUNK_DEPTH
-                local_files.append(
-                    _download_data(server, token, fmt, resolution,
+                result = _download_data(server, token, fmt, resolution,
                             x_start, x_stop,
                             y_start, y_stop,
                             z_last, z_last + CHUNK_DEPTH, "hdf5")
-                )
+                if result[0] is False:
+                    print(" !! Failed on " + result[1])
+                    failed_files.append(result[1])
+                else:
+                    local_files.append(result[0])
 
             z_last += CHUNK_DEPTH + 1
 
@@ -199,7 +208,7 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
         time.sleep(5)
         req = requests.get(request_url, stream=True)
         if req.status_code is not 200:
-            return False
+            return (False, file_name)
 
     # Now download (chunking to 1024 bytes from the stream)
     with open(file_name, 'wb+') as f:
@@ -208,4 +217,4 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
                 f.write(chunk)
                 f.flush()
 
-    return file_name
+    return (True, file_name)
