@@ -1,4 +1,5 @@
 from enums import *
+from exceptions import *
 
 DEFAULT_ID                  = -1
 DEFAULT_CONFIDENCE          = 00
@@ -26,6 +27,7 @@ class RAMONBase(object):
             :author:            `string` Username of the person who created the annotation
         """
         self._id = id
+        self._id_set_manually = True if id is not DEFAULT_ID else False
         self._confidence = confidence
         self._dynamic_metadata = dynamic_metadata
         self._status = status
@@ -38,7 +40,10 @@ class RAMONBase(object):
     @id.setter
     def id(self, value):
         # You may not set the _id after instantiation
-        return False
+        if type(value) is not int or value <= 0:
+            raise InvalidIDException("Invalid ID {0}".format(value))
+        self._id = value
+        return value
 
     @property
     def status(self):
