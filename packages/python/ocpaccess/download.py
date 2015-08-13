@@ -4,6 +4,7 @@ import h5py
 import os
 import numpy
 from PIL import Image
+import time
 
 import convert.png
 
@@ -86,6 +87,7 @@ def get_data(token,
 
     # The array of local files that we create
     local_files = []
+    failed_files = []
 
     # OCP stores cubes of z-size = CHUNK_DEPTH. To be efficient,
     # we'll download in CHUNK_DEPTH-z-slice units.
@@ -206,10 +208,11 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
         # Give the server five seconds to catch its breath
         # TODO: ugh
         time.sleep(5)
-        req = requests.get(request_url, stream=True)
-        if req.status_code is not 200:
+        req2 = requests.get(request_url, stream=True)
+        if req2.status_code is not 200:
             return (False, file_name)
-
+        else:
+            req = req2
     # Now download (chunking to 1024 bytes from the stream)
     with open(file_name, 'wb+') as f:
         for chunk in req.iter_content(chunk_size=1024):
