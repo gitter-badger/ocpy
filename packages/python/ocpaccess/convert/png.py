@@ -39,6 +39,10 @@ def export_png(png_filename, numpy_data):
         String. The expanded filename that now holds the png data
     """
 
+    if len(numpy_data.shape) is not 2:
+        print("Cannot save 3D data in this format.")
+        return False
+
     # Expand filename to be absolute
     png_filename = os.path.expanduser(png_filename)
 
@@ -47,7 +51,11 @@ def export_png(png_filename, numpy_data):
         return False
 
     try:
-        img = Image.fromarray(numpy_data)
+        if numpy_data.dtype.name is not 'uint8':
+            m = 'I'
+            img = Image.fromarray(numpy_data, mode=m)
+        else:
+            img = Image.fromarray(numpy_data)
         img.save(png_filename)
     except Exception as e:
         print("Could not save png file {0}.".format(png_filename))

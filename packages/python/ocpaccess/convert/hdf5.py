@@ -17,7 +17,7 @@ def import_hdf5(hdf5_filename):
     hdf5_filename = os.path.expanduser(hdf5_filename)
 
     try:
-        f = h5py.File(hdf_filename, "r")
+        f = h5py.File(hdf5_filename, "r")
         # OCP stores data inside the 'cutout' h5 dataset
         data_layers = f.get('CUTOUT')
     except Exception as e:
