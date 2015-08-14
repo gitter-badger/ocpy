@@ -27,6 +27,38 @@ def get_info(token, server=DEFAULT_SERVER):
 
 
 
+def snap_to_cube(q_start, q_stop, chunk_depth=16, q_index=1):
+    """
+    For any q in {x, y, z, t}
+    Takes in a q-range and returns a 1D bound that starts at a cube
+    boundary and ends at another cube boundary and includes the volume
+    inside the bounds. For instance, snap_to_cube(2, 3) = (1, 17)
+
+    Arguments:
+        :q_start:       `int` The lower bound of the q bounding box of volume
+        :q_stop:        `int` The upper bound of the q bounding box of volume
+        :chunk_depth:   `int : CHUNK_DEPTH` The size of the chunk in this volume (use ``get_info()``)
+        :q_index:       `int : 1` The starting index of the volume (in q)
+    Returns:
+        :2-tuple: ``(lo, hi)`` bounding box for the volume
+    """
+    lo = 0; hi = 0
+    # Start by indexing everything at zero for our own sanity
+    q_start -= q_index; q_stop -= q_index
+
+    if q_start % chunk_depth == 0:
+        lo = q_start
+    else:
+        lo = q_start - (q_start % chunk_depth)
+
+    if q_stop % chunk_depth == 0:
+        hi = q_stop
+    else:
+        hi = q_stop + (chunk_depth - q_stop % chunk_depth)
+
+    return (lo + q_index, hi + q_index)
+
+
 def get_data(token,
              x_start, x_stop,
              y_start, y_stop,
@@ -35,13 +67,13 @@ def get_data(token,
              fmt=DEFAULT_FORMAT,
              server=DEFAULT_SERVER,
              location="./",
-             ask_before_writing=False):
+             ask_before_writing=False,
+             chunk_depth=CHUNK_DEPTH):
     """
     Get data from the OCP server.
 
     Arguments:
-        :server:                ``string : DEFAULT_SERVER``
-                                Internet-facing server. Must include protocol (e.g. ``https``).
+        :server:                ``string : DEFAULT_SERVER`` Internet-facing server. Must include protocol (e.g. ``https``).
         :token:                 ``string`` Token to identify data to download
         :fmt:                   ``string : 'hdf5'`` The desired output format
         :resolution:            ``int`` Resolution level
@@ -87,49 +119,43 @@ def get_data(token,
     local_files = []
     failed_files = []
 
-    # OCP stores cubes of z-size = CHUNK_DEPTH. To be efficient,
-    # we'll download in CHUNK_DEPTH-z-slice units.
-    if z_stop - z_start <= CHUNK_DEPTH:
-        # We don't have to split, just download.
+
+    proj_info = get_info(token=token, server=server)
+    z_cube_size = proj_info['dataset']['cube_dimension'][str(resolution)][2]
+    z_index = proj_info['dataset']['slicerange'][0]
+    z_bounds = snap_to_cube(z_start, z_stop, chunk_depth=z_cube_size, z_index=z_index)
+
+    # Cursor to keep track of progress through volume
+    cursor = z_start
+
+    if z_stop - z_start <= z_cube_size:
         result = _download_data(server, token, fmt, resolution,
-                            x_start, x_stop,
-                            y_start, y_stop,
-                            z_start, z_stop, "hdf5")
+                                x_start, x_stop, y_start, y_stop, z_start, z_stop, "hdf5")
         if result[0] is False:
             print(" !! Failed on " + result[1])
             failed_files.append(result[1])
         else:
             local_files.append(result[1])
     else:
-        # We need to split into CHUNK_DEPTH-slice chunks.
-        z_last = z_start
-        while z_last < z_stop:
-            # Download from z_last to z_last + CHUNK_DEPTH OR
-            # z_stop, whichever is smaller
-            if z_stop <= z_last + CHUNK_DEPTH:
-                # Download from z_last to z_stop
-                result = _download_data(server, token, fmt, resolution,
-                            x_start, x_stop,
-                            y_start, y_stop,
-                            z_last, z_stop, "hdf5")
-                if result[0] is False:
-                    print(" !! Failed on " + result[1])
-                    failed_files.append(result[1])
-                else:
-                    local_files.append(result[1])
-            else:
-                # Download from z_last to z_last + CHUNK_DEPTH
-                result = _download_data(server, token, fmt, resolution,
-                            x_start, x_stop,
-                            y_start, y_stop,
-                            z_last, z_last + CHUNK_DEPTH, "hdf5")
-                if result[0] is False:
-                    print(" !! Failed on " + result[1])
-                    failed_files.append(result[1])
-                else:
-                    local_files.append(result[1])
+        result = _download_data(server, token, fmt, resolution,
+                                x_start, x_stop, y_start, y_stop, z_start, z_bounds[0] + z_cube_size, "hdf5")
+        cursor = z_bounds[0] + z_cube_size
+        if result[0] is False:
+            print(" !! Failed on " + result[1])
+            failed_files.append(result[1])
+        else:
+            local_files.append(result[1])
 
-            z_last += CHUNK_DEPTH + 1
+        while cursor < z_stop:
+            stop_at = min(z_stop, cursor + z_cube_size)
+            result = _download_data(server, token, fmt, resolution,
+                                    x_start, x_stop, y_start, y_stop, cursor, stop_at, "hdf5")
+            cursor = stop_at
+            if result[0] is False:
+                print(" !! Failed on " + result[1])
+                failed_files.append(result[1])
+            else:
+                local_files.append(result[1])
 
     # We now have an array, `local_files`, holding all of the
     # files that we downloaded, as well as a list of `failed_files`
