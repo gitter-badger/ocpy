@@ -71,9 +71,9 @@ def get_data(token,
     os.chdir(location)
 
     try:
-        os.mkdir('hdf5'); os.mkdir('png');
+        os.mkdir('hdf5');
     except Exception as e:
-        print("Data directories already exist, not creating /hdf5 or /png.")
+        print("Data directory already exists, not creating /hdf5.")
 
     if ask_before_writing:
         confirm = raw_input("The data will be saved to /" + location + ".\n" +
@@ -132,16 +132,14 @@ def get_data(token,
             z_last += CHUNK_DEPTH + 1
 
     # We now have an array, `local_files`, holding all of the
-    # files that we downloaded.
-    print([i for i in local_files])
-    files = convert_files_to_png(token, fmt, resolution,
-                                  x_start, x_stop,
-                                  y_start, y_stop,
-                                  z_start, z_stop,
-                                  local_files)
+    # files that we downloaded, as well as a list of `failed_files`
+    # that were not downloaded successfully. That is, there SHOULD
+    # have been files named as per failed_files, but they did not
+    # succeeed. (See Request.Request for a way to convert them to urls)
     # Return to starting directory
     os.chdir(cur_dir)
-    return (files, failed_files)
+    return (local_files, failed_files)
+
 
 def convert_files_to_png(token, fmt, resolution,
                         x_start, x_stop,
