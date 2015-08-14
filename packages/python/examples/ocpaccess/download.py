@@ -142,6 +142,39 @@ def get_data(token,
     return (local_files, failed_files)
 
 
+def convert_files_to_png(token, fmt, resolution,
+                        x_start, x_stop,
+                        y_start, y_stop,
+                        z_start, z_stop,
+                        file_array):
+    # Because we downloaded these files in sequence by z-index
+    # (which is bad, it's better to mosaic the coords in x & y as well)
+    # we can simply 'slice' them into individual png files so they're 1
+    # unit 'thick' (like a virtual microtome.)
+    i = z_start
+    print("Converting HDF5 files to single-layer PNGs.")
+    for hdf_file in file_array:
+        print("Slicing " + hdf_file)
+        f = h5py.File(hdf_file, "r")
+        # OCP stores data inside the 'cutout' h5 dataset
+        data_layers = f.get('CUTOUT')
+
+        out_files = []
+        for layer in data_layers:
+            # Filename is formatted like the request URL but `/` is `-`
+            png_file = "-".join([
+                token, fmt, str(resolution),
+                str(x_start) + "," + str(x_stop),
+                str(y_start) + "," + str(y_stop),
+                str(i).zfill(6)
+            ]) + ".png"
+
+            out_files.append(
+                convert.png.export_png("png/" + png_file, numpy.array(layer)))
+            i += 1
+    return out_files
+
+
 
 def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
     """

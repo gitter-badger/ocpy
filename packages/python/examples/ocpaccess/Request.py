@@ -88,7 +88,7 @@ class Request(object):
             self.token,
             self.format,
             self.resolution,
-            str(self.x_start.zfill(6)) + "," + str(self.x_stop.zfill(6)),
-            str(self.y_start.zfill(6)) + "," + str(self.y_stop.zfill(6)),
-            str(self.z_start.zfill(6)) + "," + str(self.z_stop.zfill(6)) + "." + self.format
+            str(self.x_start) + "," + str(self.x_stop),
+            str(self.y_start) + "," + str(self.y_stop),
+            str(self.z_start) + "," + str(self.z_stop) + "." + self.format
         ])
