@@ -6,12 +6,9 @@ import numpy
 from PIL import Image
 import time
 
+from enums import *
+from Request import *
 import convert.png
-
-
-DEFAULT_SERVER =    'http://openconnecto.me'
-DEFAULT_FORMAT =    'hdf5'
-CHUNK_DEPTH    =    16
 
 
 def get_info(token, server=DEFAULT_SERVER):
