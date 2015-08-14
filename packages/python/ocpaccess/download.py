@@ -136,6 +136,7 @@ def get_data(token,
     # that were not downloaded successfully. That is, there SHOULD
     # have been files named as per failed_files, but they did not
     # succeeed. (See Request.Request for a way to convert them to urls)
+
     # Return to starting directory
     os.chdir(cur_dir)
     return (local_files, failed_files)
@@ -183,17 +184,21 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
     print("Downloading " + str(z_start) + "-" + str(z_stop))
     # Build a string that holds the full URL to request.
 
-    request_data = [
-        server, 'ocp', 'ca',                # Boilerplate server URL
-        token, fmt, str(resolution),        # Set token, format, and resolution
-        str(x_start) + "," + str(x_stop),   # X
-        str(y_start) + "," + str(y_stop),   # Y
-        str(z_start) + "," + str(z_stop),   # Z
-        ""                                  # Trailing '/'
-    ]
+    req = Request(
+        server = server,
+        token = token,
+        fmt = fmt,
+        resolution = resolution,
+        x_start = x_start,
+        x_stop = x_stop,
+        y_start = y_start,
+        y_stop = y_stop,
+        z_start = z_start,
+        z_stop = z_stop
+    )
 
-    request_url = '/'.join(request_data)
-    file_name   = location + "/" + '-'.join(request_data[3:-1]) + "." + fmt
+    request_url = req.to_url()
+    file_name   = location + "/" + req.to_filename()
 
     # Create a `requests` object.
     req = requests.get(request_url, stream=True)

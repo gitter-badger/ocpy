@@ -79,3 +79,16 @@ class Request(object):
             str(self.y_start) + "," + str(self.y_stop),
             str(self.z_start) + "," + str(self.z_stop),
         ""])
+
+    def to_filename(self):
+        return '-'.join([
+            self.server,
+            "ocp",
+            "ca",
+            self.token,
+            self.format,
+            self.resolution,
+            str(self.x_start) + "," + str(self.x_stop),
+            str(self.y_start) + "," + str(self.y_stop),
+            str(self.z_start) + "," + str(self.z_stop) + "." + self.format
+        ])
