@@ -29,6 +29,7 @@ def get_info(token, server=DEFAULT_SERVER):
     return req.json()
 
 
+
 def get_data(token,
              x_start, x_stop,
              y_start, y_stop,
@@ -57,13 +58,13 @@ def get_data(token,
     """
 
     total_size = (x_stop - x_start) * (y_stop - y_start) * (z_stop - z_start) * (14./(1000.*1000.*16.))
-
     print("Downloading approximately " + str(total_size) + " MB.\n")
+
+    # Remember cwd so that we can cd back to it after we finish.
+    cur_dir = os.getcwd()
 
     # Figure out where we'll be saving files. If the directories don't
     # exist, let's create them now.
-    cur_dir = os.getcwd()
-
     location = location if location else os.getcwd()
     try:
         os.mkdir(location)
