@@ -3,7 +3,7 @@ This script downloads 1GB of the bock11 dataset from OCP.
 """
 
 import ocpaccess.download
-import ocpaccess.convert
+import ocpaccess.convert.png
 from ocpaccess.Request import *
 import os, glob
 import h5py
@@ -22,15 +22,15 @@ starting_directory = os.getcwd()
 #                             z_start=3100,           z_stop=3150,
 #                             location=DATA_LOCATION)
 
-os.chdir(DATA_LOCATION)
+os.chdir(DATA_LOCATION + "/hdf5")
 
-for filename in glob.glob("hdf5/*.hdf5"):
+for filename in glob.glob("*.hdf5"):
     # First get the actual parameters from the HDF5 file.
     req = Request(filename)
     i = req.z_start
 
     print("Slicing " + filename)
-    f = h5py.File(f, "r")
+    f = h5py.File(filename, "r")
     # OCP stores data inside the 'cutout' h5 dataset
     data_layers = f.get('CUTOUT')
 
@@ -40,7 +40,7 @@ for filename in glob.glob("hdf5/*.hdf5"):
         png_file = filename + str(i) + ".png"
 
         out_files.append(
-            convert.png.export_png("../png/" + png_file, numpy.array(layer)))
+            ocpaccess.convert.png.export_png("../png/" + png_file, numpy.array(layer)))
         i += 1
 
     # if you want, you have access to the out_files array here.
