@@ -22,6 +22,7 @@ downloaded_files, failed_files = \
                             z_start=3100,           z_stop=3150,
                             location=DATA_LOCATION)
 
+os.mkdir(DATA_LOCATION + "/png")
 os.chdir(DATA_LOCATION + "/hdf5")
 
 for filename in glob.glob("*.hdf5"):

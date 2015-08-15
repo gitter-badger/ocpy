@@ -59,7 +59,6 @@ def export_png(png_filename, numpy_data):
         img.save(png_filename)
     except Exception as e:
         print("Could not save png file {0}.".format(png_filename))
-
     return png_filename
 
 

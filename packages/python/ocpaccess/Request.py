@@ -15,7 +15,7 @@ class Request(object):
             else:
                 raise ValueError("Unsupported constructor for type {0}".format(type(args[0])))
         else:
-            self._init_from_individual_values(*args)
+            self._init_from_individual_values(**kwargs)
 
     def _init_from_filename(self, fname):
         # Remove file extension
@@ -74,7 +74,7 @@ class Request(object):
             "ca",
             self.token,
             self.format,
-            self.resolution,
+            str(self.resolution),
             str(self.x_start) + "," + str(self.x_stop),
             str(self.y_start) + "," + str(self.y_stop),
             str(self.z_start) + "," + str(self.z_stop),
@@ -87,8 +87,8 @@ class Request(object):
             "ca",
             self.token,
             self.format,
-            self.resolution,
-            str(self.x_start.zfill(6)) + "," + str(self.x_stop.zfill(6)),
-            str(self.y_start.zfill(6)) + "," + str(self.y_stop.zfill(6)),
-            str(self.z_start.zfill(6)) + "," + str(self.z_stop.zfill(6)) + "." + self.format
+            str(self.resolution),
+            str(self.x_start).zfill(6) + "," + str(self.x_stop).zfill(6),
+            str(self.y_start).zfill(6) + "," + str(self.y_stop).zfill(6),
+            str(self.z_start).zfill(6) + "," + str(self.z_stop).zfill(6) + "." + self.format
         ])

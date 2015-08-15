@@ -123,7 +123,7 @@ def get_data(token,
     proj_info = get_info(token=token, server=server)
     z_cube_size = proj_info['dataset']['cube_dimension'][str(resolution)][2]
     z_index = proj_info['dataset']['slicerange'][0]
-    z_bounds = snap_to_cube(z_start, z_stop, chunk_depth=z_cube_size, z_index=z_index)
+    z_bounds = snap_to_cube(z_start, z_stop, chunk_depth=z_cube_size, q_index=z_index)
 
     # Cursor to keep track of progress through volume
     cursor = z_start
@@ -180,7 +180,7 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
     req = Request(
         server = server,
         token = token,
-        fmt = fmt,
+        format = fmt,
         resolution = resolution,
         x_start = x_start,
         x_stop = x_stop,
