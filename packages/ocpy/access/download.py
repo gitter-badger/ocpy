@@ -8,8 +8,6 @@ import time
 
 from enums import *
 from Request import *
-import convert.png
-
 
 def get_info(token, server=DEFAULT_SERVER):
     """
@@ -79,7 +77,7 @@ def get_data(token,
         :resolution:            ``int`` Resolution level
         :Q_start:               ``int`` The lower bound of dimension 'Q'
         :Q_stop:                ``int`` The upper bound of dimension 'Q'
-        :location:              ``string : './'`` The on-disk location where we'll create /hdf5 and /png
+        :location:              ``string : './'`` The on-disk location where we'll create /hdf5
         :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.
 
     Returns:
