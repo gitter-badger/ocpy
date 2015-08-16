@@ -2,9 +2,9 @@
 This script downloads a few pixels from a few Kasthuri 2015 tokens.
 """
 
-import ocpaccess.download
-from ocpaccess.convert import png
-from ocpaccess.Request import *
+import ocpy.download
+from ocpy.convert import png
+from ocpy.Request import *
 import os, glob
 import h5py
 
@@ -17,7 +17,7 @@ def download_token_and_convert_to_png(tk):
 
     # Save downloaded files to the bock11_sample/ directory
     downloaded_files, failed_files = \
-            ocpaccess.download.get_data(
+            ocpy.download.get_data(
                                 token=tk,               resolution=1,
                                 x_start=3000,           x_stop=3010,
                                 y_start=3000,           y_stop=3010,
