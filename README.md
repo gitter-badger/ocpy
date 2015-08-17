@@ -1,4 +1,4 @@
-# ocpAccess
+# OCPy
 Scripts to get data from the OCP server. Feel free to submit bug reports [here](https://github.com/openconnectome/ocpAccess/issues).
 
 
@@ -9,12 +9,10 @@ In order to set up the python environment, you'll need to download a few librari
 
 
 ## Python: Setup
-The python package directory `ocpaccess` must be in the same directory as your python code that uses it.
+The python package directory `ocpy` must be in the same directory as your python code that uses it.
 
 ## Python: Usage
-The python script `ocp_access.py` contains a function called `get_data`. This is usable from your code: Simply copy this file into your project directory and add `import ocp_access` to the list of python imports.
-
-You can now use the function `ocp_access.get_data()` to retrieve data from the OCP servers.
+You can use the function `ocpy.access.get_data()` to retrieve data from the OCP servers.
 
 | Argument | Required | Description |
 |----------|----------|-------------|
@@ -30,12 +28,12 @@ You can now use the function `ocp_access.get_data()` to retrieve data from the O
 | `server` | No (`http://openconnecto.me`) | The server at which to request data |
 | `location` | No (`./`) | The location on-disk (locally) where you'd like to save the data. Two subdirectories will be created: `/hdf5` and `/tiff`. |
 
-## Python: Example
+## Python: ExampleV
 
 ```
-import ocp_access
+import ocpy.access
 
-ocp_access.get_data(
+ocpy.access.get_data(
         token =     "kasthuri11",
         x_start =      5000,              x_stop =      5500,
         y_start =      5000,              y_stop =      5500,
