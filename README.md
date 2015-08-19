@@ -1,13 +1,19 @@
 # OCPy
-Scripts to get data from the OCP server. Feel free to submit bug reports [here](https://github.com/openconnectome/ocpAccess/issues).
+Scripts to get data from the OCP server. Feel free to submit bug reports or feature requests [here](https://github.com/openconnectome/ocpAccess/issues).
 
 These scripts are written to work with 2.7 and (ideally, but untestedly) Python 3. An example (how to download the [*CELL*, Kasthuri (July 30 2015)](http://www.openconnectomeproject.org/#!kasthuri11/c12r2) data) is included inside [`/examples`](https://github.com/openconnectome/ocpAccess/tree/master/packages/python/examples).
 
-In order to set up the python environment, you'll need to download a few libraries. You can use `pip` for this, and run `pip install -r requirements` from inside the `/python` directory, or you can manually install each of the libraries listed in the `requirements` file.
+
 
 
 ## Setup
-The python package directory `ocpy` must be in the same directory as your python code that uses it.
+Use `pip` to install the latest stable `ocpy` package from the Python Package Index:
+
+```
+pip install ocpy
+```
+
+You may need to satisfy requirements as listed in the `requirements` file: You can use `pip` for this as well, and run `pip install -r requirements` from inside the package directory, or you can manually install each of the libraries listed in the `requirements` file.
 
 ## Usage
 You can use the function `ocpy.access.get_data()` to retrieve data from the OCP servers.
