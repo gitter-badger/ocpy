@@ -10,3 +10,7 @@ data/
 
 # Compiled and Binary
 *.pyc
+
+# pip junk
+dist/
+
