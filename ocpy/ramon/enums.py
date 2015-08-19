@@ -17,3 +17,9 @@ eRAMONAnnoStatus = enum("DEFAULT",
                         LOCKED=1,
                         PROCESSED=2,
                         IGNORED=3)
+
+DEFAULT_ID                  = -1
+DEFAULT_CONFIDENCE          = 00
+DEFAULT_DYNAMIC_METADATA    = {}
+DEFAULT_STATUS              = eRAMONAnnoStatus.DEFAULT
+DEFAULT_AUTHOR              = ''

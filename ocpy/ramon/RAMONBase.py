@@ -1,12 +1,6 @@
 from enums import *
 from exceptions import *
 
-DEFAULT_ID                  = -1
-DEFAULT_CONFIDENCE          = 00
-DEFAULT_DYNAMIC_METADATA    = {}
-DEFAULT_STATUS              = eRAMONAnnoStatus.DEFAULT
-DEFAULT_AUTHOR              = ''
-
 class RAMONBase(object):
     """
     RAMONBase Object for storing neuroscience data

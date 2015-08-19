@@ -2,7 +2,7 @@ from enums import *
 from exceptions import *
 import numpy
 
-import RAMONBase
+from RAMONBase import RAMONBase
 
 class RAMONVolume(RAMONBase):
     """

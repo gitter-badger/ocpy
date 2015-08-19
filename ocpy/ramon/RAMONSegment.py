@@ -2,7 +2,7 @@ from enums import *
 from exceptions import *
 import numpy
 
-import RAMONVolume
+from RAMONVolume import RAMONVolume
 
 class RAMONSegment(RAMONVolume):
     """
