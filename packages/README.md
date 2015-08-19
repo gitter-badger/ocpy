@@ -1,17 +1,15 @@
 # OCPy
 Scripts to get data from the OCP server. Feel free to submit bug reports [here](https://github.com/openconnectome/ocpAccess/issues).
 
-
-# Python
 These scripts are written to work with 2.7 and (ideally, but untestedly) Python 3. An example (how to download the [*CELL*, Kasthuri (July 30 2015)](http://www.openconnectomeproject.org/#!kasthuri11/c12r2) data) is included inside [`/examples`](https://github.com/openconnectome/ocpAccess/tree/master/packages/python/examples).
 
 In order to set up the python environment, you'll need to download a few libraries. You can use `pip` for this, and run `pip install -r requirements` from inside the `/python` directory, or you can manually install each of the libraries listed in the `requirements` file.
 
 
-## Python: Setup
+## Setup
 The python package directory `ocpy` must be in the same directory as your python code that uses it.
 
-## Python: Usage
+## Usage
 You can use the function `ocpy.access.get_data()` to retrieve data from the OCP servers.
 
 | Argument | Required | Description |
@@ -28,26 +26,20 @@ You can use the function `ocpy.access.get_data()` to retrieve data from the OCP 
 | `server` | No (`http://openconnecto.me`) | The server at which to request data |
 | `location` | No (`./`) | The location on-disk (locally) where you'd like to save the data. Two subdirectories will be created: `/hdf5` and `/tiff`. |
 
-## Python: ExampleV
+## Example
 
 ```
 import ocpy.access
 
 ocpy.access.get_data(
-        token =     "kasthuri11",
+        token =        "kasthuri11",
         x_start =      5000,              x_stop =      5500,
         y_start =      5000,              y_stop =      5500,
         z_start =      1,                 z_stop =      3,
-        location =  "data"
+        location =     "data"
 )
 ```
 
 The above script downloads 500x500x2 voxels of data from the `kasthuri11` dataset and saves them on your hard-drive inside a subdirectory called `data`.
 
-**Note:** There is a known bug in the scipy/PIL TIFF converter that prevents accurate hdf5-tiff conversion of non-uint8 data. This will not affect `kasthuri11`.
-
-
-# bash
-This provides a function that wraps `curl` in order to allow more efficient chunking and more reliable download than simply trying to download the full dataset simultaneously. Use the file included in [`/examples`](https://github.com/openconnectome/ocpAccess/tree/master/packages/bash/examples) to download the Kasthuri *CELL* 2015 data.
-
-This relies on `curl`, which comes standard on unix and OSX distributions. Windows users are encouraged to use another download method, or may try using `cygwin` for a semi-native `curl` implementation.
+**Note:** There is a known bug in the scipy/PIL TIFF converter that prevents accurate hdf5-tiff conversion of non-uint8 data.
