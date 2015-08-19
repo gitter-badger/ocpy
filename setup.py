@@ -8,6 +8,15 @@ setup(
   author_email = 'j6k4m8@gmail.com',
   url = 'https://github.com/openconnectome/ocpy',
   download_url = 'https://github.com/openconnectome/ocpy/tarball/0.5.1',
-  keywords = ['brain', 'neuro', 'neuroscience', 'ocpy', 'ocp', 'ocp.me', 'connectome', 'connectomics'],
+  keywords = [
+    'brain',
+    'neuro',
+    'neuroscience',
+    'ocpy',
+    'ocp',
+    'ocp.me',
+    'connectome',
+    'connectomics'
+],
   classifiers = [],
 )
