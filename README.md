@@ -26,6 +26,8 @@ You can use the function `ocpy.access.get_data()` to retrieve data from the OCP 
 | `server` | No (`http://openconnecto.me`) | The server at which to request data |
 | `location` | No (`./`) | The location on-disk (locally) where you'd like to save the data. Two subdirectories will be created: `/hdf5` and `/tiff`. |
 
+See the [guide](#) for more examples and use cases.
+
 ## Example
 
 ```
@@ -43,3 +45,5 @@ ocpy.access.get_data(
 The above script downloads 500x500x2 voxels of data from the `kasthuri11` dataset and saves them on your hard-drive inside a subdirectory called `data`.
 
 **Note:** There is a known bug in the scipy/PIL TIFF converter that prevents accurate hdf5-tiff conversion of non-uint8 data.
+
+<small>This package was generated using [this tutorial](http://peterdowns.com/posts/first-time-with-pypi.html).</small>
