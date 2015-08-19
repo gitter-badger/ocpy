@@ -1,3 +1,0 @@
-rm -r ./source/apidoc
-sphinx-apidoc -o ./source/apidoc ../packages/python
-make html
