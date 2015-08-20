@@ -58,6 +58,7 @@ def snap_to_cube(q_start, q_stop, chunk_depth=16, q_index=1):
 
 
 def get_data(token,
+             channel,
              x_start, x_stop,
              y_start, y_stop,
              z_start, z_stop,
@@ -73,6 +74,7 @@ def get_data(token,
     Arguments:
         :server:                ``string : DEFAULT_SERVER`` Internet-facing server. Must include protocol (e.g. ``https``).
         :token:                 ``string`` Token to identify data to download
+        :channel:               ``string`` Channel
         :fmt:                   ``string : 'hdf5'`` The desired output format
         :resolution:            ``int`` Resolution level
         :Q_start:               ``int`` The lower bound of dimension 'Q'
@@ -127,7 +129,7 @@ def get_data(token,
     cursor = z_start
 
     if z_stop - z_start <= z_cube_size:
-        result = _download_data(server, token, fmt, resolution,
+        result = _download_data(server, token, channel, fmt, resolution,
                                 x_start, x_stop, y_start, y_stop, z_start, z_stop, "hdf5")
         if result[0] is False:
             print(" !! Failed on " + result[1])
@@ -135,7 +137,7 @@ def get_data(token,
         else:
             local_files.append(result[1])
     else:
-        result = _download_data(server, token, fmt, resolution,
+        result = _download_data(server, token, channel, fmt, resolution,
                                 x_start, x_stop, y_start, y_stop, z_start, z_bounds[0] + z_cube_size, "hdf5")
         cursor = z_bounds[0] + z_cube_size
         if result[0] is False:
@@ -146,7 +148,7 @@ def get_data(token,
 
         while cursor < z_stop:
             stop_at = min(z_stop, cursor + z_cube_size)
-            result = _download_data(server, token, fmt, resolution,
+            result = _download_data(server, token, channel, fmt, resolution,
                                     x_start, x_stop, y_start, y_stop, cursor, stop_at, "hdf5")
             cursor = stop_at
             if result[0] is False:
@@ -167,7 +169,7 @@ def get_data(token,
 
 
 
-def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
+def _download_data(server, token, channel, fmt, resolution, x_start, x_stop, y_start, y_stop, z_start, z_stop, location):
     """
     Download the actual data from the server. Uses 1MB chunks when saving.
     Returns the filename stored locally. Specify a save-location target in get_data.
@@ -178,6 +180,7 @@ def _download_data(server, token, fmt, resolution, x_start, x_stop, y_start, y_s
     req = Request(
         server = server,
         token = token,
+        channel = channel,
         format = fmt,
         resolution = resolution,
         x_start = x_start,
