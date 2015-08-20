@@ -10,9 +10,21 @@ from enums import *
 from Request import *
 
 
-def put_data(token, data, x_start, x_stop=0, y_start, y_stop=0, z_start, z_stop=0, filename):
+def put_data(server=DEFAULT_SERVER, token, data, x_start, x_stop=0, y_start, y_stop=0, z_start, z_stop=0, filename="tmp.hdf5"):
     """
     Upload data onto the OCP server.
+
+    Arguments:
+        :server:        ``string : ocpy.access.enums.DEFAULT_SERVER`` The server to access
+        :token:         ``string`` The token to upload (must be read/write)
+        :data:          ``numpy.ndarray`` The data to upload
+        :q_start:       ``int`` Lower bound of Q dimension
+        :q_stop:        ``int : 0`` Upper bound of Q dimension. If omitted, is
+                        autopopulated to contain q_start + data-size.
+        :filename:      A temporary HDF5 file to stream to the server.
+
+    Returns:
+        : bool : Success of the call (True/False).
     """
 
     if x_stop == 0: x_stop = x_start + data.shape[0]
