@@ -24,7 +24,7 @@ class Request(object):
 
     def _init_from_url(self, url, delimiter='/'):
         """
-        protocol://server/ocp/ca/token/fmt/res/x_start,x_stop/y_start,y_stop/z_start,z_stop/
+        protocol://server/ocp/ca/token/channel/fmt/res/x_start,x_stop/y_start,y_stop/z_start,z_stop/
         """
         url = url.strip(delimiter)
         split_url = url.split('://')
@@ -43,7 +43,7 @@ class Request(object):
         raise NotImplementedError("Not yet implemented.")
 
     def _init_from_individual_values(self,
-                        server=DEFAULT_SERVER, token="",
+                        server=DEFAULT_SERVER, token="", channel="",
                         x_start="", x_stop="",
                         y_start="", y_stop="", z_start="", z_stop="",
                         resolution="", format=DEFAULT_FORMAT):
@@ -57,6 +57,7 @@ class Request(object):
             raise ValueError("Invalid server name: {0}".format(server))
 
         self.token = token
+        self.channel = channel
         self.x_start = x_start
         self.x_stop = x_stop
         self.y_start = y_start
@@ -73,6 +74,7 @@ class Request(object):
             "ocp",
             "ca",
             self.token,
+            self.channel,
             self.format,
             str(self.resolution),
             str(self.x_start) + "," + str(self.x_stop),
@@ -86,6 +88,7 @@ class Request(object):
             "ocp",
             "ca",
             self.token,
+            self.channel,
             self.format,
             str(self.resolution),
             str(self.x_start).zfill(6) + "," + str(self.x_stop).zfill(6),

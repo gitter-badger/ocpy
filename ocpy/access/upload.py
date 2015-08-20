@@ -10,13 +10,14 @@ from enums import *
 from Request import *
 
 
-def put_data(server=DEFAULT_SERVER, token, data, x_start, x_stop=0, y_start, y_stop=0, z_start, z_stop=0, filename="tmp.hdf5"):
+def put_data(token, channel, data, x_start, y_start, z_start, channel_type="image", server=DEFAULT_SERVER, x_stop=0, y_stop=0, z_stop=0, filename="tmp.hdf5"):
     """
     Upload data onto the OCP server.
 
     Arguments:
         :server:        ``string : ocpy.access.enums.DEFAULT_SERVER`` The server to access
         :token:         ``string`` The token to upload (must be read/write)
+        :channel:       ``string`` The token to upload (must be read/write)
         :data:          ``numpy.ndarray`` The data to upload
         :q_start:       ``int`` Lower bound of Q dimension
         :q_stop:        ``int : 0`` Upper bound of Q dimension. If omitted, is
@@ -38,12 +39,17 @@ def put_data(server=DEFAULT_SERVER, token, data, x_start, x_stop=0, y_start, y_s
     if (z_stop - z_start) != data.shape[2]:
         raise DataSizeError("Bad fit: z-range")
 
+    datatype = 'u' + data.dtype.name if data.dtype.name != 'int64' else 'uint32'
+
     fout = h5py.File(filename, driver="core", backing_store=True)
     fout.create_dataset("CUTOUT", data.shape, data.dtype, compression="gzip", data=data)
+    fout.create_dataset("DATATYPE", data=datatype)
+    fout.create_dataset("CHANNELTYPE", data=channel_type)
     fout.close()
 
     req = Request(
         token =         token,
+        channel =       channel,
         x_start =       x_start,
         x_stop =        x_stop,
         y_start =       y_start,
@@ -57,6 +63,7 @@ def put_data(server=DEFAULT_SERVER, token, data, x_start, x_stop=0, y_start, y_s
     url = req.to_url()
 
     with open(filename, 'rb') as payload:
-        req = requests.post(url, data=payload)
+        import pdb; pdb.set_trace()
+        req = requests.post(url, data=payload.read())
 
     return req.status_code == 200
