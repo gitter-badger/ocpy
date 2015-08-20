@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ocpy.ramon.RAMONGeneric &mdash; ocpy 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ocpy 0.5.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../../../index.html" class="icon icon-home"> ocpy
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">ocpy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>ocpy.ramon.RAMONGeneric</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for ocpy.ramon.RAMONGeneric</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">enums</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">exceptions</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">RAMONVolume</span> <span class="kn">import</span> <span class="n">RAMONVolume</span>
+
+<div class="viewcode-block" id="RAMONGeneric"><a class="viewcode-back" href="../../../ocpy/ocpy.ramon.html#ocpy.ramon.RAMONGeneric.RAMONGeneric">[docs]</a><span class="k">class</span> <span class="nc">RAMONGeneric</span><span class="p">(</span><span class="n">RAMONVolume</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    RAMONGeneric Object for storing neuroscience data with a voxel volume</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">xyz_offset</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">resolution</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">cutout</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                <span class="n">voxels</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                    <span class="nb">id</span> <span class="o">=</span> <span class="n">DEFAULT_ID</span><span class="p">,</span>
+                    <span class="n">confidence</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIDENCE</span><span class="p">,</span>
+                    <span class="n">dynamic_metadata</span> <span class="o">=</span> <span class="n">DEFAULT_DYNAMIC_METADATA</span><span class="p">,</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">DEFAULT_STATUS</span><span class="p">,</span>
+                    <span class="n">author</span> <span class="o">=</span> <span class="n">DEFAULT_AUTHOR</span><span class="p">):</span>
+
+            <span class="n">RAMONVolume</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">xyz_offset</span> <span class="o">=</span> <span class="n">xyz_offset</span><span class="p">,</span>
+                            <span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span><span class="p">,</span>
+                            <span class="n">cutout</span> <span class="o">=</span> <span class="n">cutout</span><span class="p">,</span>
+                            <span class="n">voxels</span> <span class="o">=</span> <span class="n">voxels</span><span class="p">,</span>
+                            <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span>
+                            <span class="n">confidence</span> <span class="o">=</span> <span class="n">confidence</span><span class="p">,</span>
+                            <span class="n">dynamic_metadata</span> <span class="o">=</span> <span class="n">dynamic_metadata</span><span class="p">,</span>
+                            <span class="n">status</span> <span class="o">=</span> <span class="n">status</span><span class="p">,</span>
+                            <span class="n">author</span> <span class="o">=</span> <span class="n">author</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, ocp.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

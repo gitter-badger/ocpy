@@ -53,6 +53,8 @@ clean:
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	cp -r ${BUILDDIR}/html/* ../../ocpy_docs
+	touch ../../ocpy_docs/.nojekyll
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

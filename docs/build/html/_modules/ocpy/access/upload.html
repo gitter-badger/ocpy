@@ -1,0 +1,240 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ocpy.access.upload &mdash; ocpy 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ocpy 0.5.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../../../index.html" class="icon icon-home"> ocpy
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">ocpy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>ocpy.access.upload</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for ocpy.access.upload</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">enums</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">Request</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="put_data"><a class="viewcode-back" href="../../../ocpy/ocpy.access.html#ocpy.access.upload.put_data">[docs]</a><span class="k">def</span> <span class="nf">put_data</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">channel_type</span><span class="o">=</span><span class="s">&quot;image&quot;</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">,</span> <span class="n">x_stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&quot;tmp.hdf5&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Upload data onto the OCP server.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        :server:        ``string : ocpy.access.enums.DEFAULT_SERVER`` The server to access</span>
+<span class="sd">        :token:         ``string`` The token to upload (must be read/write)</span>
+<span class="sd">        :channel:       ``string`` The token to upload (must be read/write)</span>
+<span class="sd">        :data:          ``numpy.ndarray`` The data to upload</span>
+<span class="sd">        :q_start:       ``int`` Lower bound of Q dimension</span>
+<span class="sd">        :q_stop:        ``int : 0`` Upper bound of Q dimension. If omitted, is</span>
+<span class="sd">                        autopopulated to contain q_start + data-size.</span>
+<span class="sd">        :filename:      A temporary HDF5 file to stream to the server.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        : bool : Success of the call (True/False).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">x_stop</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">x_stop</span> <span class="o">=</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">y_stop</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">y_stop</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">z_stop</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">z_stop</span> <span class="o">=</span> <span class="n">z_start</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">x_stop</span> <span class="o">-</span> <span class="n">x_start</span><span class="p">)</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">DataSizeError</span><span class="p">(</span><span class="s">&quot;Bad fit: x-range&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">y_stop</span> <span class="o">-</span> <span class="n">y_start</span><span class="p">)</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">DataSizeError</span><span class="p">(</span><span class="s">&quot;Bad fit: y-range&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">z_stop</span> <span class="o">-</span> <span class="n">z_start</span><span class="p">)</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">DataSizeError</span><span class="p">(</span><span class="s">&quot;Bad fit: z-range&quot;</span><span class="p">)</span>
+
+    <span class="n">datatype</span> <span class="o">=</span> <span class="s">&#39;u&#39;</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s">&#39;int64&#39;</span> <span class="k">else</span> <span class="s">&#39;uint32&#39;</span>
+
+    <span class="n">fout</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s">&quot;core&quot;</span><span class="p">,</span> <span class="n">backing_store</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;CUTOUT&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;DATATYPE&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;CHANNELTYPE&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">channel_type</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+        <span class="n">token</span> <span class="o">=</span>         <span class="n">token</span><span class="p">,</span>
+        <span class="n">channel</span> <span class="o">=</span>       <span class="n">channel</span><span class="p">,</span>
+        <span class="n">x_start</span> <span class="o">=</span>       <span class="n">x_start</span><span class="p">,</span>
+        <span class="n">x_stop</span> <span class="o">=</span>        <span class="n">x_stop</span><span class="p">,</span>
+        <span class="n">y_start</span> <span class="o">=</span>       <span class="n">y_start</span><span class="p">,</span>
+        <span class="n">y_stop</span> <span class="o">=</span>        <span class="n">y_stop</span><span class="p">,</span>
+        <span class="n">z_start</span> <span class="o">=</span>       <span class="n">z_start</span><span class="p">,</span>
+        <span class="n">z_stop</span> <span class="o">=</span>        <span class="n">z_stop</span><span class="p">,</span>
+        <span class="n">resolution</span> <span class="o">=</span>    <span class="s">&quot;1&quot;</span><span class="p">,</span>
+        <span class="n">format</span> <span class="o">=</span>        <span class="s">&quot;hdf5&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">payload</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pdb</span><span class="p">;</span> <span class="n">pdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, ocp.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
