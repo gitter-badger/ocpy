@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ocpy.access.download &mdash; ocpy 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ocpy 0.5.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../../../index.html" class="icon icon-home"> ocpy
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">ocpy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>ocpy.access.download</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for ocpy.access.download</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">enums</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">Request</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="get_info"><a class="viewcode-back" href="../../../ocpy/ocpy.access.html#ocpy.access.download.get_info">[docs]</a><span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get information about a dataset from its token, using the /info endpoint.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        :token:     ``string`` The token identifying the dataset to investigate</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        JSON object containing the content of the /info page.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">server</span><span class="p">,</span> <span class="s">&#39;ocp&#39;</span><span class="p">,</span> <span class="s">&#39;ca&#39;</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">])</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+
+</div>
+<div class="viewcode-block" id="snap_to_cube"><a class="viewcode-back" href="../../../ocpy/ocpy.access.html#ocpy.access.download.snap_to_cube">[docs]</a><span class="k">def</span> <span class="nf">snap_to_cube</span><span class="p">(</span><span class="n">q_start</span><span class="p">,</span> <span class="n">q_stop</span><span class="p">,</span> <span class="n">chunk_depth</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">q_index</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For any q in {x, y, z, t}</span>
+<span class="sd">    Takes in a q-range and returns a 1D bound that starts at a cube</span>
+<span class="sd">    boundary and ends at another cube boundary and includes the volume</span>
+<span class="sd">    inside the bounds. For instance, snap_to_cube(2, 3) = (1, 17)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        :q_start:       `int` The lower bound of the q bounding box of volume</span>
+<span class="sd">        :q_stop:        `int` The upper bound of the q bounding box of volume</span>
+<span class="sd">        :chunk_depth:   `int : CHUNK_DEPTH` The size of the chunk in this volume (use ``get_info()``)</span>
+<span class="sd">        :q_index:       `int : 1` The starting index of the volume (in q)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        :2-tuple: ``(lo, hi)`` bounding box for the volume</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c"># Start by indexing everything at zero for our own sanity</span>
+    <span class="n">q_start</span> <span class="o">-=</span> <span class="n">q_index</span><span class="p">;</span> <span class="n">q_stop</span> <span class="o">-=</span> <span class="n">q_index</span>
+
+    <span class="k">if</span> <span class="n">q_start</span> <span class="o">%</span> <span class="n">chunk_depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">q_start</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">q_start</span> <span class="o">-</span> <span class="p">(</span><span class="n">q_start</span> <span class="o">%</span> <span class="n">chunk_depth</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">q_stop</span> <span class="o">%</span> <span class="n">chunk_depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">q_stop</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">q_stop</span> <span class="o">+</span> <span class="p">(</span><span class="n">chunk_depth</span> <span class="o">-</span> <span class="n">q_stop</span> <span class="o">%</span> <span class="n">chunk_depth</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">lo</span> <span class="o">+</span> <span class="n">q_index</span><span class="p">,</span> <span class="n">hi</span> <span class="o">+</span> <span class="n">q_index</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../../ocpy/ocpy.access.html#ocpy.access.download.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">token</span><span class="p">,</span>
+             <span class="n">channel</span><span class="p">,</span>
+             <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span>
+             <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span>
+             <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span>
+             <span class="n">resolution</span><span class="p">,</span>
+             <span class="n">fmt</span><span class="o">=</span><span class="n">DEFAULT_FORMAT</span><span class="p">,</span>
+             <span class="n">server</span><span class="o">=</span><span class="n">DEFAULT_SERVER</span><span class="p">,</span>
+             <span class="n">location</span><span class="o">=</span><span class="s">&quot;./&quot;</span><span class="p">,</span>
+             <span class="n">ask_before_writing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+             <span class="n">chunk_depth</span><span class="o">=</span><span class="n">CHUNK_DEPTH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get data from the OCP server.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        :server:                ``string : DEFAULT_SERVER`` Internet-facing server. Must include protocol (e.g. ``https``).</span>
+<span class="sd">        :token:                 ``string`` Token to identify data to download</span>
+<span class="sd">        :channel:               ``string`` Channel</span>
+<span class="sd">        :fmt:                   ``string : &#39;hdf5&#39;`` The desired output format</span>
+<span class="sd">        :resolution:            ``int`` Resolution level</span>
+<span class="sd">        :Q_start:               ``int`` The lower bound of dimension &#39;Q&#39;</span>
+<span class="sd">        :Q_stop:                ``int`` The upper bound of dimension &#39;Q&#39;</span>
+<span class="sd">        :location:              ``string : &#39;./&#39;`` The on-disk location where we&#39;ll create /hdf5</span>
+<span class="sd">        :ask_before_writing:    ``boolean : False`` Whether to ask (y/n) before creating directories. Default value is `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :``string[]``: Filenames that were saved to disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">total_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_stop</span> <span class="o">-</span> <span class="n">x_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_stop</span> <span class="o">-</span> <span class="n">y_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_stop</span> <span class="o">-</span> <span class="n">z_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">14.</span><span class="o">/</span><span class="p">(</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">16.</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Downloading approximately &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_size</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; MB.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="c"># Remember cwd so that we can cd back to it after we finish.</span>
+    <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="c"># Figure out where we&#39;ll be saving files. If the directories don&#39;t</span>
+    <span class="c"># exist, let&#39;s create them now.</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">location</span> <span class="k">if</span> <span class="n">location</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Directory /&quot;</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s">&quot; already exists, not creating.&quot;</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;hdf5&#39;</span><span class="p">);</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Data directory already exists, not creating /hdf5.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ask_before_writing</span><span class="p">:</span>
+        <span class="n">confirm</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;The data will be saved to /&quot;</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s">&quot;.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span>
+              <span class="s">&quot;Continue? [yn] &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">confirm</span> <span class="ow">is</span> <span class="s">&#39;n&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span><span class="p">;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&quot;hdf5&quot;</span> <span class="c"># Hard-coded for now to minimize server-load</span>
+
+    <span class="c"># The array of local files that we create</span>
+    <span class="n">local_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">failed_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+    <span class="n">proj_info</span> <span class="o">=</span> <span class="n">get_info</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">)</span>
+    <span class="n">z_cube_size</span> <span class="o">=</span> <span class="n">proj_info</span><span class="p">[</span><span class="s">&#39;dataset&#39;</span><span class="p">][</span><span class="s">&#39;cube_dimension&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">z_index</span> <span class="o">=</span> <span class="n">proj_info</span><span class="p">[</span><span class="s">&#39;dataset&#39;</span><span class="p">][</span><span class="s">&#39;slicerange&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">z_bounds</span> <span class="o">=</span> <span class="n">snap_to_cube</span><span class="p">(</span><span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="n">chunk_depth</span><span class="o">=</span><span class="n">z_cube_size</span><span class="p">,</span> <span class="n">q_index</span><span class="o">=</span><span class="n">z_index</span><span class="p">)</span>
+
+    <span class="c"># Cursor to keep track of progress through volume</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">z_start</span>
+
+    <span class="k">if</span> <span class="n">z_stop</span> <span class="o">-</span> <span class="n">z_start</span> <span class="o">&lt;=</span> <span class="n">z_cube_size</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
+                                <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot; !! Failed on &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">failed_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
+                                <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">z_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">z_cube_size</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">z_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">z_cube_size</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot; !! Failed on &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">failed_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">while</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="n">z_stop</span><span class="p">:</span>
+            <span class="n">stop_at</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z_stop</span><span class="p">,</span> <span class="n">cursor</span> <span class="o">+</span> <span class="n">z_cube_size</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
+                                    <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="n">stop_at</span><span class="p">,</span> <span class="s">&quot;hdf5&quot;</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">stop_at</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot; !! Failed on &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">failed_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c"># We now have an array, `local_files`, holding all of the</span>
+    <span class="c"># files that we downloaded, as well as a list of `failed_files`</span>
+    <span class="c"># that were not downloaded successfully. That is, there SHOULD</span>
+    <span class="c"># have been files named as per failed_files, but they did not</span>
+    <span class="c"># succeeed. (See Request.Request for a way to convert them to urls)</span>
+
+    <span class="c"># Return to starting directory</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cur_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">local_files</span><span class="p">,</span> <span class="n">failed_files</span><span class="p">)</span>
+
+
+</div>
+<span class="k">def</span> <span class="nf">_download_data</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_stop</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_stop</span><span class="p">,</span> <span class="n">z_start</span><span class="p">,</span> <span class="n">z_stop</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download the actual data from the server. Uses 1MB chunks when saving.</span>
+<span class="sd">    Returns the filename stored locally. Specify a save-location target in get_data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Downloading &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_stop</span><span class="p">))</span>
+    <span class="c"># Build a string that holds the full URL to request.</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+        <span class="n">server</span> <span class="o">=</span> <span class="n">server</span><span class="p">,</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">token</span><span class="p">,</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="p">,</span>
+        <span class="n">format</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">,</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span><span class="p">,</span>
+        <span class="n">x_start</span> <span class="o">=</span> <span class="n">x_start</span><span class="p">,</span>
+        <span class="n">x_stop</span> <span class="o">=</span> <span class="n">x_stop</span><span class="p">,</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="n">y_start</span><span class="p">,</span>
+        <span class="n">y_stop</span> <span class="o">=</span> <span class="n">y_stop</span><span class="p">,</span>
+        <span class="n">z_start</span> <span class="o">=</span> <span class="n">z_start</span><span class="p">,</span>
+        <span class="n">z_stop</span> <span class="o">=</span> <span class="n">z_stop</span>
+    <span class="p">)</span>
+
+    <span class="n">request_url</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span>
+    <span class="n">file_name</span>   <span class="o">=</span> <span class="n">location</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">req</span><span class="o">.</span><span class="n">to_filename</span><span class="p">()</span>
+
+    <span class="c"># Create a `requests` object.</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request_url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot; !! Error encountered... Trying again in 5s...&quot;</span><span class="p">)</span>
+        <span class="c"># Give the server five seconds to catch its breath</span>
+        <span class="c"># TODO: ugh</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">req2</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request_url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">req2</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">req2</span>
+    <span class="c"># Now download (chunking to 1024 bytes from the stream)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s">&#39;wb+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, ocp.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
