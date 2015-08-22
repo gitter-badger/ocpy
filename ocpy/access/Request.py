@@ -1,20 +1,46 @@
 from enums import *
 
 class Request(object):
-
+    """
+    A ocpy Request holds an absolute URL that can be used
+    to access a unique datum. Requests can be thought of as
+    a Python class wrapper for a RESTful endpoint.
+    """
     def __init__(self, *args, **kwargs):
+        """
+        There are three ways of creating a Request; by URL,
+        by filename, by an ordered tuple (in the order of the
+        URL, incidentally) or by named variables. For example:
+
+        ``Request('http://openconnecto.me/ocp/ca/tokenName/channelName/hdf5/1/0,10/0,10/0,10/')``
+
+        ``Request('openconnecto.me-ocp-ca-tokenName-channelName-hdf5-1-0,10-0,10-0,10.hdf5')``
+
+        ``Request('http://openconnecto.me', 'tokenName', 'channelName', 'hdf5', '1', '0', '10', '0', '10', '0', '10')``
+
+
+        ``Request('server=http://openconnecto.me', token='tokenName', channel='channelName', format='hdf5', resolution='1', x_start='0', x_stop='10', y_start='0', y_stop='10', z_start='0', z_stop='10')``
+
+        ...are all equivalent ways of creating a Request.
+
+        These requests are currently all Image/Dense Requests... In a subsequent release, DenseRequest will inherit from a general Request class.
+        """
         if len(args) == 1:
             if type(args[0]) is str:
+                # Either URL or filename.
                 url = args[0]
                 if url.startswith('http'):
                     self._init_from_url(url)
                 else:
                     self._init_from_filename(url)
             elif type(args[0]) is tuple:
+                # Parse from an ordered tuple
                 self._init_from_ordered_tuple(args[0])
             else:
+                # There is no other way to create a Request from a single argument. Fail here.
                 raise ValueError("Unsupported constructor for type {0}".format(type(args[0])))
         else:
+            # We should expect named variables for each attribute.
             self._init_from_individual_values(**kwargs)
 
     def _init_from_filename(self, fname):
@@ -26,6 +52,8 @@ class Request(object):
         """
         protocol://server/ocp/ca/token/channel/fmt/res/x_start,x_stop/y_start,y_stop/z_start,z_stop/
         """
+        # The delimiter argument is so that we can use the same
+        # function for URL and Filename parsing.
         url = url.strip(delimiter)
         split_url = url.split('://')
         if len(split_url) == 2:
@@ -68,6 +96,14 @@ class Request(object):
         self.format = format
 
     def to_url(self):
+        """
+        Output a URL that can be used to execute this Request.
+
+        Arguments:
+            None.
+        Returns:
+            ``str`` RESTful endpoint URL.
+        """
         return '/'.join([
             self.protocol + ":/",
             self.server,
@@ -82,7 +118,21 @@ class Request(object):
             str(self.z_start) + "," + str(self.z_stop),
         ""])
 
+
     def to_filename(self):
+        """
+        Output a filename that can be used to save data from this
+        request and can later be used to create a new Request (using
+        the _init_from_filename constructor) to download identical
+        data. In that regard, we can use a filename as a unique
+        'hash' of its data.
+
+        Arguments:
+            None.
+        Returns:
+            ``str`` Suggested filename for data that has been
+            downloaded by this Request.
+        """
         return '-'.join([
             self.server,
             "ocp",

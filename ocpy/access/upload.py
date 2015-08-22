@@ -28,10 +28,13 @@ def put_data(token, channel, data, x_start, y_start, z_start, channel_type="imag
         : bool : Success of the call (True/False).
     """
 
+    # Handle unset q_stops for dimension 'q'
     if x_stop == 0: x_stop = x_start + data.shape[0]
     if y_stop == 0: y_stop = y_start + data.shape[1]
     if z_stop == 0: z_stop = z_start + data.shape[2]
 
+    # Throw exceptions if there has been a set dataset shape that
+    # is not matched by the shape of the data
     if (x_stop - x_start) != data.shape[0]:
         raise DataSizeError("Bad fit: x-range")
     if (y_stop - y_start) != data.shape[1]:
@@ -39,14 +42,17 @@ def put_data(token, channel, data, x_start, y_start, z_start, channel_type="imag
     if (z_stop - z_start) != data.shape[2]:
         raise DataSizeError("Bad fit: z-range")
 
+    # TODO: Use h5py dataset casting
     datatype = 'u' + data.dtype.name if data.dtype.name != 'int64' else 'uint32'
 
+    # Create an HDF5 file that holds the data in order to send it
     fout = h5py.File(filename, driver="core", backing_store=True)
     fout.create_dataset("CUTOUT", data.shape, data.dtype, compression="gzip", data=data)
     fout.create_dataset("DATATYPE", data=datatype)
     fout.create_dataset("CHANNELTYPE", data=channel_type)
     fout.close()
 
+    # Create a request that holds the URL of the API endpoint
     req = Request(
         token =         token,
         channel =       channel,
@@ -66,4 +72,8 @@ def put_data(token, channel, data, x_start, y_start, z_start, channel_type="imag
         import pdb; pdb.set_trace()
         req = requests.post(url, data=payload.read())
 
-    return req.status_code == 200
+    # If we return !200, clearly something went wrong...
+    if req.status_code == 200:
+        return True
+    else:
+        return req.status_code
